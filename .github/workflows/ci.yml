@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install shellcheck
+        run: sudo apt-get install -y shellcheck
+      - name: Lint all shell scripts
+        run: shellcheck -x -S warning kova install.sh .claude/hooks/*.sh .claude/hooks/lib/*.sh
+
+  test:
+    name: Bats Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install jq
+        run: |
+          if ! command -v jq &>/dev/null; then
+            if [ "$(uname)" = "Darwin" ]; then
+              brew install jq
+            else
+              sudo apt-get install -y jq
+            fi
+          fi
+
+      - name: Run unit tests
+        run: npx bats tests/unit
+
+      - name: Run integration tests
+        run: npx bats tests/integration
+
+      - name: Run regression tests
+        run: npx bats tests/regression
