@@ -85,13 +85,29 @@ $diff_content"
   # Parse the severity from the output
   if echo "$review_output" | grep -qi "SEVERITY:.*HIGH"; then
     REVIEW_RESULT="HIGH"
-    return 0
   elif echo "$review_output" | grep -qi "SEVERITY:.*CLEAN"; then
     REVIEW_RESULT="CLEAN"
-    return 0
   else
     # shellcheck disable=SC2034
     REVIEW_RESULT="LOW_ONLY"
-    return 0
   fi
+
+  # Optional: Cross-model review via Codex
+  if type codex_available &>/dev/null && codex_available; then
+    local codex_diff="/tmp/.kova-review-diff-$$.txt"
+    local codex_rev="/tmp/.kova-codex-review-$$.md"
+    echo "$diff_content" > "$codex_diff"
+    if codex_review "$codex_diff" "$codex_rev"; then
+      echo "" >> "$output_file"
+      echo "---" >> "$output_file"
+      cat "$codex_rev" >> "$output_file"
+      # Elevate if Codex found HIGH issues Claude missed
+      if [ "$REVIEW_RESULT" != "HIGH" ] && grep -qi "SEVERITY:.*HIGH" "$codex_rev"; then
+        REVIEW_RESULT="HIGH"
+      fi
+    fi
+    rm -f "$codex_diff" "$codex_rev"
+  fi
+
+  return 0
 }

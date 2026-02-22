@@ -10,7 +10,7 @@ setup() {
   # Initialize a real git repo in the sandbox so git diff --quiet works
   git init "$SANDBOX" >/dev/null 2>&1
   cd "$SANDBOX"
-  git commit --allow-empty -m "init" >/dev/null 2>&1
+  git -c user.name="Test" -c user.email="test@test.com" commit --allow-empty -m "init" >/dev/null 2>&1
 
   # Set required env vars that the hook expects
   export CLAUDE_PROJECT_DIR="$SANDBOX"

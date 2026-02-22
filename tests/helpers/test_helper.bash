@@ -63,5 +63,6 @@ installed_lib_files() {
   echo "run-code-review.sh"
   echo "rate-limiter.sh"
   echo "circuit-breaker.sh"
+  echo "codex-assist.sh"
   echo "kova-statusline.sh"
 }

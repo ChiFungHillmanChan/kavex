@@ -82,6 +82,13 @@ generate_fix_verify_prompt() {
     parsed_content=$(cat "$parsed_failures_file")
   fi
 
+  local codex_section=""
+  local state_dir
+  state_dir=$(dirname "$parsed_failures_file")
+  if [ -f "$state_dir/codex-diagnosis-latest.md" ]; then
+    codex_section=$(cat "$state_dir/codex-diagnosis-latest.md")
+  fi
+
   cat > "$output_file" << PROMPT_EOF
 # Fix Verification Failures (attempt $fix_attempt of $max_attempts)
 
@@ -90,6 +97,12 @@ You are a senior engineer fixing specific test/lint/type failures. Do NOT re-imp
 
 ## Parsed Failures
 $parsed_content
+$(if [ -n "$codex_section" ]; then
+echo ""
+echo "$codex_section"
+echo ""
+echo "IMPORTANT: The above diagnosis is from a DIFFERENT AI model (Codex). Consider its suggestions carefully."
+fi)
 
 ## Raw Output (last 100 lines)
 \`\`\`
@@ -130,6 +143,13 @@ generate_fix_review_prompt() {
     review_content=$(cat "$review_output_file")
   fi
 
+  local codex_section=""
+  # Look for Codex diagnosis in the kova-loop state directory
+  local state_dir=".kova-loop"
+  if [ -f "$state_dir/codex-diagnosis-latest.md" ]; then
+    codex_section=$(cat "$state_dir/codex-diagnosis-latest.md")
+  fi
+
   cat > "$output_file" << PROMPT_EOF
 # Fix Code Review Issues (attempt $fix_attempt)
 
@@ -138,6 +158,12 @@ You are a senior engineer fixing HIGH-severity code review issues. Fix the issue
 
 ## Code Review Findings (HIGH severity)
 $review_content
+$(if [ -n "$codex_section" ]; then
+echo ""
+echo "$codex_section"
+echo ""
+echo "IMPORTANT: The above diagnosis is from a DIFFERENT AI model (Codex). Consider its suggestions carefully."
+fi)
 
 ## Recent changes (git diff --stat):
 \`\`\`
