@@ -36,6 +36,34 @@ kova setup
 
 ---
 
+## Documentation
+
+### Full Guides
+
+| Language | Link |
+|----------|------|
+| English | [docs/en/README.md](docs/en/README.md) |
+| Cantonese (粵語) | [docs/zh-hk/README.md](docs/zh-hk/README.md) |
+| Simplified Chinese (简体中文) | [docs/zh-cn/README.md](docs/zh-cn/README.md) |
+
+### Topic Guides
+
+| Topic | Link |
+|-------|------|
+| tmux Guide (English) | [docs/tmux/tmux-guide-en.md](docs/tmux/tmux-guide-en.md) |
+| tmux Guide (繁體中文) | [docs/tmux/tmux-guide-zh-hant.md](docs/tmux/tmux-guide-zh-hant.md) |
+| tmux Guide (简体中文) | [docs/tmux/tmux-guide-zh-hans.md](docs/tmux/tmux-guide-zh-hans.md) |
+
+### Other Resources
+
+| Resource | Link |
+|----------|------|
+| Contributing | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| Release Notes | [RELEASE_NOTES.md](RELEASE_NOTES.md) |
+| License | [MIT](LICENSE) |
+
+---
+
 ## Why Kova
 
 - **Safe by default** — blocks dangerous commands (`rm -rf /`, `DROP TABLE`, force push) and protects secrets
@@ -131,34 +159,6 @@ kova deactivate    # Turn OFF hooks
 | **Status Line** | Shows `[KOVA]`, `[KOVA LOOP]`, or `[kova off]` in Claude Code |
 
 See the [full guide](docs/en/README.md) for detailed explanations of each feature.
-
----
-
-## Documentation
-
-### Full Guides
-
-| Language | Link |
-|----------|------|
-| English | [docs/en/README.md](docs/en/README.md) |
-| Cantonese (粵語) | [docs/zh-hk/README.md](docs/zh-hk/README.md) |
-| Simplified Chinese (简体中文) | [docs/zh-cn/README.md](docs/zh-cn/README.md) |
-
-### Topic Guides
-
-| Topic | Link |
-|-------|------|
-| tmux Guide (English) | [docs/tmux/tmux-guide-en.md](docs/tmux/tmux-guide-en.md) |
-| tmux Guide (繁體中文) | [docs/tmux/tmux-guide-zh-hant.md](docs/tmux/tmux-guide-zh-hant.md) |
-| tmux Guide (简体中文) | [docs/tmux/tmux-guide-zh-hans.md](docs/tmux/tmux-guide-zh-hans.md) |
-
-### Other Resources
-
-| Resource | Link |
-|----------|------|
-| Contributing | [CONTRIBUTING.md](CONTRIBUTING.md) |
-| Release Notes | [RELEASE_NOTES.md](RELEASE_NOTES.md) |
-| License | [MIT](LICENSE) |
 
 ---
 
