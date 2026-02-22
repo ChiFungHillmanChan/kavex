@@ -62,8 +62,9 @@ teardown() {
   # Run with PATH stripped to simulate missing tmux
   run env PATH="/usr/bin:/bin" bash "$KOVA_ROOT/kova-monitor" start "$SANDBOX/test.md"
   # Should fail because tmux is not in the restricted path (or it is and works)
-  # We can't guarantee tmux isn't in /usr/bin, so just check it doesn't crash
-  [ "$status" -eq 0 ] || assert_output --partial "tmux"
+  # We can't guarantee tmux isn't in /usr/bin, so just check it doesn't crash.
+  # In CI without a terminal, tmux may emit "size missing" instead of a tmux-related error.
+  [ "$status" -eq 0 ] || [[ "$output" == *"tmux"* ]] || [[ "$output" == *"size"* ]]
 }
 
 # --- status ---
