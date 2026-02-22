@@ -117,6 +117,7 @@ if $DRY_RUN; then
   echo "  hooks/lib/run-code-review.sh"
   echo "  hooks/lib/rate-limiter.sh"
   echo "  hooks/lib/circuit-breaker.sh"
+  echo "  hooks/lib/codex-assist.sh"
   echo "  hooks/lib/kova-statusline.sh"
   echo "  kova-monitor (CLI script → .claude/kova-monitor)"
   echo "  commands/commit-push-pr.md"
@@ -177,6 +178,7 @@ cp "$SCRIPT_DIR/.claude/hooks/lib/generate-prompt.sh"   "$TARGET_DIR/.claude/hoo
 cp "$SCRIPT_DIR/.claude/hooks/lib/run-code-review.sh"   "$TARGET_DIR/.claude/hooks/lib/"
 cp "$SCRIPT_DIR/.claude/hooks/lib/rate-limiter.sh"     "$TARGET_DIR/.claude/hooks/lib/"
 cp "$SCRIPT_DIR/.claude/hooks/lib/circuit-breaker.sh"  "$TARGET_DIR/.claude/hooks/lib/"
+cp "$SCRIPT_DIR/.claude/hooks/lib/codex-assist.sh"    "$TARGET_DIR/.claude/hooks/lib/"
 cp "$SCRIPT_DIR/.claude/hooks/lib/kova-statusline.sh" "$TARGET_DIR/.claude/hooks/lib/"
 
 # Make hooks executable

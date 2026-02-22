@@ -5,6 +5,7 @@
 # Max 3 retries before writing DEBUG_LOG.md and spawning self-healing session
 
 source "$(dirname "$0")/lib/detect-stack.sh"
+source "$(dirname "$0")/lib/codex-assist.sh"
 
 INPUT=$(cat)
 STOP_ACTIVE=$(echo "$INPUT" | jq -r '.stop_hook_active // false' 2>/dev/null)
@@ -50,6 +51,15 @@ $(cat "$HISTORY_FILE" 2>/dev/null || echo "No history available")
 ### Action: Auto-spawning fresh session to fix.
 DEBUGEOF
 
+  # Cross-model diagnosis before self-heal
+  codex_diag="/tmp/.claude-codex-diag-$PROJ_HASH"
+  if codex_diagnose "DEBUG_LOG.md" "$codex_diag"; then
+    echo "" >> DEBUG_LOG.md
+    cat "$codex_diag" >> DEBUG_LOG.md
+    echo "STOP GATE: Codex diagnosis appended to DEBUG_LOG.md" >&2
+  fi
+  rm -f "$codex_diag"
+
   echo "STOP GATE: Failed 3 times. DEBUG_LOG.md written." >&2
   rm -f "$COUNTER_FILE"
   rm -f "$HISTORY_FILE"
@@ -62,7 +72,7 @@ DEBUGEOF
 
   # Spawn fresh Claude session in background
   if command -v claude &>/dev/null; then
-    PROMPT="Read DEBUG_LOG.md and fix all failures listed. Run tests after each fix. Do not ask questions — use the assumption protocol."
+    PROMPT="Read DEBUG_LOG.md and fix all failures listed. Pay special attention to the 'Cross-Model Diagnosis [codex]' section if present — it contains analysis from a different AI model. Run tests after each fix. Do not ask questions — use the assumption protocol."
     CLAUDE_SELF_HEAL=1 nohup claude -p "$PROMPT" \
       --allowedTools "Edit,Write,Bash,Read,Glob,Grep" \
       > "/tmp/.claude-self-heal-$PROJ_HASH.log" 2>&1 &

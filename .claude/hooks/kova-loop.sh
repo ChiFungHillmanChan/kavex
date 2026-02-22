@@ -16,6 +16,7 @@ source "$LIB_DIR/verify-gate.sh"
 source "$LIB_DIR/run-code-review.sh"
 source "$LIB_DIR/rate-limiter.sh"
 source "$LIB_DIR/circuit-breaker.sh"
+source "$LIB_DIR/codex-assist.sh"
 
 PRD_FILE=""
 MAX_ITERATIONS=20
@@ -245,7 +246,20 @@ main() {
         HIGH|ERROR)
           echo "  Review: $REVIEW_RESULT — needs attention." >&2
           log_iteration "$iteration" "$current_item" "$mode" "REVIEW_$REVIEW_RESULT" ""
-          fix_attempts=$((fix_attempts + 1)); mode="fix-review" ;;
+          fix_attempts=$((fix_attempts + 1))
+          # Codex escalation at threshold
+          local codex_threshold=$(( MAX_FIX_ATTEMPTS > 3 ? 3 : MAX_FIX_ATTEMPTS - 1 ))
+          if [ "$fix_attempts" -eq "$codex_threshold" ]; then
+            echo "  Escalating to Codex for cross-model diagnosis..." >&2
+            local codex_diag="$STATE_DIR/codex-diagnosis-latest.md"
+            if codex_diagnose "$STATE_DIR/review-output-latest.log" "$codex_diag"; then
+              log_iteration "$iteration" "$current_item" "$mode" "CODEX_DIAGNOSE" "success"
+            else
+              rm -f "$codex_diag"
+              log_iteration "$iteration" "$current_item" "$mode" "CODEX_DIAGNOSE" "skipped"
+            fi
+          fi
+          mode="fix-review" ;;
       esac
     else
       cp "$verify_output" "$STATE_DIR/verify-output-latest.log"
@@ -253,6 +267,18 @@ main() {
       parse_all_failures "$verify_output" "$STATE_DIR/parsed-failures-latest.md"
       log_iteration "$iteration" "$current_item" "$mode" "VERIFY_FAIL" "$FAILURES layers failed"
       fix_attempts=$((fix_attempts + 1))
+      # Codex escalation at threshold
+      local codex_threshold=$(( MAX_FIX_ATTEMPTS > 3 ? 3 : MAX_FIX_ATTEMPTS - 1 ))
+      if [ "$fix_attempts" -eq "$codex_threshold" ]; then
+        echo "  Escalating to Codex for cross-model diagnosis..." >&2
+        local codex_diag="$STATE_DIR/codex-diagnosis-latest.md"
+        if codex_diagnose "$STATE_DIR/parsed-failures-latest.md" "$codex_diag"; then
+          log_iteration "$iteration" "$current_item" "$mode" "CODEX_DIAGNOSE" "success"
+        else
+          rm -f "$codex_diag"
+          log_iteration "$iteration" "$current_item" "$mode" "CODEX_DIAGNOSE" "skipped"
+        fi
+      fi
       if [ "$fix_attempts" -ge "$MAX_FIX_ATTEMPTS" ]; then
         record_stuck_item "$current_item" "$item_text" "$fix_attempts" "$mode"
         current_item=$((current_item + 1)); fix_attempts=0; mode="implement"
