@@ -68,9 +68,16 @@ $diff_content"
 
   # Run the review (read-only tools only)
   local review_output
-  review_output=$(claude -p "$full_prompt" \
-    --allowedTools "Read,Glob,Grep" \
-    --output-format text 2>/dev/null)
+  if [[ "${KOVA_SILENT:-0}" != "1" ]]; then
+    echo "  ▶ Code review session (live):" >&2
+    review_output=$(claude -p "$full_prompt" \
+      --allowedTools "Read,Glob,Grep" \
+      --output-format text 2>&1 | tee /dev/stderr)
+  else
+    review_output=$(claude -p "$full_prompt" \
+      --allowedTools "Read,Glob,Grep" \
+      --output-format text 2>/dev/null)
+  fi
 
   local exit_code=$?
 
