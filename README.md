@@ -64,9 +64,26 @@ kova setup
 
 ---
 
-## Why Kova
+## Why Kova?
 
-- **Safe by default** — blocks dangerous commands (`rm -rf /`, `DROP TABLE`, force push) and protects secrets
+Other tools improve Claude Code with better prompts. Kova enforces quality with **bash-level gates that Claude cannot skip**.
+
+| Capability | Raw Claude Code | [Ralph](https://github.com/frankbria/ralph-claude-code) | [Claude Pilot](https://github.com/maxritter/claude-pilot) | **Kova** |
+|---|---|---|---|---|
+| **Enforcement model** | Prompt only | Bash loop + exit detection | Hooks + prompt rules | **Bash orchestrator — Claude is the worker, bash is the boss** |
+| **Verification** | Manual | Exit-signal gate | Hook-triggered lint/format/typecheck | **7-layer gate runs _after_ Claude exits (unskippable)** |
+| **Safety guardrails** | None | Rate limiting, circuit breaker | Hook-based quality checks | **Command blocking (`rm -rf`, `DROP TABLE`, force push) + secret protection** |
+| **Code review** | None | None | Verifier sub-agents | **Separate Claude session + optional OpenAI Codex cross-model review** |
+| **Self-healing** | None | Circuit breaker retry | Context preservation | **`DEBUG_LOG.md` + fresh session auto-spawned after 3 failures** |
+| **Orchestration** | Single session | Bash loop per task | `/spec` plans + worktrees | **Bash loop per PRD item (implement → verify → review → commit)** |
+| **Stack detection** | None | Project type detection | File-type rules | **Auto-detect + auto-format: 7 stacks (Node, Python, Go, Rust, Ruby, Java, .NET)** |
+| **Test count** | — | 566 | — | **193** |
+
+**The key insight:** Prompt-based enforcement fails because Claude can skip instructions under context pressure. When bash runs verification _after_ Claude exits, skipping is impossible.
+
+### What makes Kova different
+
+- **Safe by default** — blocks dangerous commands and protects secrets at the hook level
 - **Verified before stop** — 7-layer gate (build, test, lint, typecheck, security) runs before Claude can finish
 - **Autonomous but bounded** — retry, rate limiting, and circuit breaker prevent runaway loops
 - **Multi-model review** — Claude agents + optional OpenAI Codex cross-model review

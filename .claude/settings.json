@@ -107,5 +107,9 @@
       "Bash(rm -rf .venv)",
       "Bash(rm -rf target)"
     ]
+  },
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CLAUDE_CODE_TEAMMATE_MODE": "tmux"
   }
 }
