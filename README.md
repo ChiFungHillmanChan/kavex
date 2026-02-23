@@ -26,13 +26,26 @@ vhs demo.tape    # outputs demo.gif
 
 ---
 
-## Quick Start
+## One-Line Install
 
 ```bash
-# 1) Clone once
-git clone https://github.com/ChiFungHillmanChan/kova.git ~/kova
+cd /path/to/your/project
+curl -fsSL https://raw.githubusercontent.com/ChiFungHillmanChan/kova/main/remote-install.sh | bash
+```
 
-# 2) Install into any project
+Preview first (no changes made):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ChiFungHillmanChan/kova/main/remote-install.sh | bash -s -- --dry-run
+```
+
+That's it — hooks, commands, and safety gates are installed into your project's `.claude/` directory.
+
+<details>
+<summary>Alternative: clone and install manually</summary>
+
+```bash
+git clone https://github.com/ChiFungHillmanChan/kova.git ~/kova
 cd /path/to/your/project
 bash ~/kova/install.sh --dry-run   # preview first
 bash ~/kova/install.sh
@@ -45,8 +58,9 @@ Optional global CLI:
 bash ~/kova/install.sh --global
 kova setup
 ```
+</details>
 
-**Requirements:** [Claude Code](https://docs.anthropic.com/en/docs/claude-code), `jq` (required), `gh` (optional), [`@openai/codex`](https://www.npmjs.com/package/@openai/codex) (optional)
+**Requirements:** [Claude Code](https://docs.anthropic.com/en/docs/claude-code), `git`, `jq` (required), `gh` (optional), [`@openai/codex`](https://www.npmjs.com/package/@openai/codex) (optional)
 
 ---
 

@@ -95,9 +95,15 @@ run_claude_with_prompt() {
     echo "ERROR: claude CLI not found." >&2; return 1
   fi
   local prompt_content; prompt_content=$(cat "$prompt_file")
-  KOVA_LOOP_ACTIVE=1 claude -p "$prompt_content" \
-    --allowedTools "Edit,Write,Bash,Read,Glob,Grep" \
-    --output-format text > "$output_file" 2>&1
+  if [[ "${KOVA_SILENT:-0}" == "1" ]]; then
+    KOVA_LOOP_ACTIVE=1 claude -p "$prompt_content" \
+      --allowedTools "Edit,Write,Bash,Read,Glob,Grep" \
+      --output-format text > "$output_file" 2>&1
+  else
+    KOVA_LOOP_ACTIVE=1 claude -p "$prompt_content" \
+      --allowedTools "Edit,Write,Bash,Read,Glob,Grep" \
+      --output-format text 2>&1 | tee "$output_file"
+  fi
   return $?
 }
 
@@ -198,6 +204,15 @@ main() {
       fix-review) generate_fix_review_prompt "$STATE_DIR/review-output-latest.log" "$fix_attempts" "$prompt_file" ;;
     esac
 
+    # Show prompt to user (unless silent)
+    if [[ "${KOVA_SILENT:-0}" != "1" ]]; then
+      echo "" >&2
+      echo "  ┌─ PROMPT TO CLAUDE ─────────────────────────" >&2
+      sed 's/^/  │ /' "$prompt_file" >&2
+      echo "  └────────────────────────────────────────────" >&2
+      echo "" >&2
+    fi
+
     # Step 2: Rate limit check + Run Claude
     if ! rate_limit_check; then
       echo "  Rate limit: ${RATE_LIMIT_CURRENT}/${MAX_INVOCATIONS_PER_HOUR:-100} per hour" >&2
@@ -205,7 +220,7 @@ main() {
     fi
 
     local claude_output="$STATE_DIR/claude-output-$iteration.log"
-    echo "  Running Claude..." >&2
+    echo "  ▶ Running Claude (live output below)..." >&2
     if ! run_claude_with_prompt "$prompt_file" "$claude_output"; then
       log_iteration "$iteration" "$current_item" "$mode" "CLAUDE_ERROR" "exit $?"
       fix_attempts=$((fix_attempts + 1))
@@ -238,19 +253,30 @@ main() {
     # Step 3: Verify
     local verify_output="$STATE_DIR/verify-output-$iteration.log"
     : > "$STATE_DIR/verify-output-latest.log"
-    echo "  Running verification gate..." >&2
+    echo "" >&2
+    echo "  ┌─ STEP: VERIFICATION GATE ────────────────────" >&2
+    echo "  │ Running 7-layer check: build → test → lint → typecheck → security" >&2
+    echo "  └──────────────────────────────────────────────" >&2
 
     if run_verify_gate "$verify_output"; then
       cp "$verify_output" "$STATE_DIR/verify-output-latest.log"
       log_iteration "$iteration" "$current_item" "$mode" "VERIFY_PASS" ""
-      echo "  Verification passed. Running code review..." >&2
+      echo "  ✓ Verification PASSED" >&2
+      echo "" >&2
+      echo "  ┌─ STEP: CODE REVIEW ────────────────────────" >&2
+      echo "  │ Separate Claude session reviewing for HIGH-severity issues" >&2
+      echo "  └────────────────────────────────────────────" >&2
       local review_output="$STATE_DIR/review-output-$iteration.log"
       run_review "$review_output"
       cp "$review_output" "$STATE_DIR/review-output-latest.log"
 
       case "$REVIEW_RESULT" in
         CLEAN|LOW_ONLY)
-          echo "  Review: $REVIEW_RESULT. Item $current_item complete!" >&2
+          echo "  ✓ Review: $REVIEW_RESULT" >&2
+          echo "" >&2
+          echo "  ┌─ STEP: COMMIT ─────────────────────────────" >&2
+          echo "  │ Item $current_item complete — committing changes" >&2
+          echo "  └────────────────────────────────────────────" >&2
           log_iteration "$iteration" "$current_item" "$mode" "ITEM_DONE" "review=$REVIEW_RESULT"
           if ! commit_item "$current_item" "$item_text"; then
             log_iteration "$iteration" "$current_item" "$mode" "COMMIT_ERROR" "git commit failed"
@@ -262,7 +288,7 @@ main() {
             no_progress_count=0
           fi ;;
         HIGH|ERROR)
-          echo "  Review: $REVIEW_RESULT — needs attention." >&2
+          echo "  ✗ Review: $REVIEW_RESULT — needs fix" >&2
           log_iteration "$iteration" "$current_item" "$mode" "REVIEW_$REVIEW_RESULT" ""
           fix_attempts=$((fix_attempts + 1))
           _maybe_escalate_to_codex "$STATE_DIR/review-output-latest.log"
@@ -270,7 +296,8 @@ main() {
       esac
     else
       cp "$verify_output" "$STATE_DIR/verify-output-latest.log"
-      echo "  Verification failed ($FAILURES layer(s)). Parsing failures..." >&2
+      echo "  ✗ Verification FAILED ($FAILURES layer(s))" >&2
+      echo "  Parsing failures for diagnostic prompt..." >&2
       parse_all_failures "$verify_output" "$STATE_DIR/parsed-failures-latest.md"
       log_iteration "$iteration" "$current_item" "$mode" "VERIFY_FAIL" "$FAILURES layers failed"
       fix_attempts=$((fix_attempts + 1))
