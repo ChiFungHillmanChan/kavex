@@ -1,12 +1,14 @@
 #!/bin/bash
 # kova-loop.sh — Kova Smart Loop orchestrator
-# Usage: bash .claude/hooks/kova-loop.sh <prd-file> [options]
+# Usage: bash hooks/kova-loop.sh <prd-file> [options]
 # Options: --max-iterations N | --max-fix-attempts N | --no-commit | --dry-run
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LIB_DIR="$SCRIPT_DIR/lib"
+# Fallback for when invoked with CLAUDE_PLUGIN_ROOT (plugin mode)
+[ -d "$LIB_DIR" ] || LIB_DIR="${CLAUDE_PLUGIN_ROOT:-$SCRIPT_DIR}/hooks/lib"
 
 source "$LIB_DIR/detect-stack.sh"
 source "$LIB_DIR/parse-prd.sh"
@@ -101,12 +103,59 @@ run_claude_with_prompt() {
   return $?
 }
 
+# Snapshot the working tree state before Claude runs an iteration.
+# Call this BEFORE run_claude_with_prompt to capture the baseline.
+# Saves: tracked file mtimes + list of untracked files.
+snapshot_pre_iteration() {
+  # List of tracked files with their status (M/D/A/etc)
+  git diff --name-only HEAD 2>/dev/null | sort > "$STATE_DIR/.pre-tracked"
+  # List of all untracked files (excluding .gitignore'd)
+  git ls-files --others --exclude-standard 2>/dev/null | sort > "$STATE_DIR/.pre-untracked"
+}
+
+# Stage only files that changed SINCE the pre-iteration snapshot.
+# This ensures only files Claude touched get committed — pre-existing
+# dirty work in the working tree is left alone.
+stage_item_changes() {
+  # Current state
+  git diff --name-only HEAD 2>/dev/null | sort > "$STATE_DIR/.post-tracked"
+  git ls-files --others --exclude-standard 2>/dev/null | sort > "$STATE_DIR/.post-untracked"
+
+  # Newly modified tracked files = in post but not pre (or changed since)
+  local changed_file
+  # Stage tracked files that are new or changed since snapshot
+  comm -13 "$STATE_DIR/.pre-tracked" "$STATE_DIR/.post-tracked" 2>/dev/null | while IFS= read -r changed_file; do
+    [ -n "$changed_file" ] && git add -- "$changed_file" 2>/dev/null || true
+  done
+  # Also stage tracked files that were already dirty but may have been modified further
+  # by Claude (we compare content, not just presence in the list)
+  comm -12 "$STATE_DIR/.pre-tracked" "$STATE_DIR/.post-tracked" 2>/dev/null | while IFS= read -r changed_file; do
+    [ -n "$changed_file" ] && git add -- "$changed_file" 2>/dev/null || true
+  done
+
+  # Stage only NEW untracked files (not present before Claude ran)
+  comm -13 "$STATE_DIR/.pre-untracked" "$STATE_DIR/.post-untracked" 2>/dev/null | while IFS= read -r changed_file; do
+    [ -z "$changed_file" ] && continue
+    # Skip sensitive files
+    case "$changed_file" in
+      *.env|*.env.*|*.pem|*.key|*.p12|*.pfx|*.jks) continue ;;
+      secrets/*|credentials/*|.secrets/*|.credentials/*) continue ;;
+      *) git add -- "$changed_file" 2>/dev/null || true ;;
+    esac
+  done
+
+  # Safety net: unstage any sensitive files
+  git reset HEAD -- '*.env' '*.env.*' '*.pem' '*.key' '*.p12' '*.pfx' '*.jks' \
+    'secrets/' 'credentials/' '.secrets/' '.credentials/' 2>/dev/null || true
+}
+
 commit_item() {
   local item_num="$1" item_text="$2"
   if $NO_COMMIT; then echo "no-commit" > "$STATE_DIR/commit-item-$item_num.txt"; return 0; fi
-  git add -A 2>/dev/null || true
-  # Unstage sensitive files that shouldn't be committed
-  git reset HEAD -- '*.env' '*.env.*' '*.pem' '*.key' 'secrets/' 'credentials/' 2>/dev/null || true
+
+  # Stage only files Claude changed in this iteration (diff against pre-snapshot)
+  stage_item_changes
+
   if git diff --cached --quiet 2>/dev/null; then
     echo "nothing-to-commit" > "$STATE_DIR/commit-item-$item_num.txt"; return 0
   fi
@@ -206,6 +255,8 @@ main() {
 
     local claude_output="$STATE_DIR/claude-output-$iteration.log"
     echo "  Running Claude..." >&2
+    # Snapshot working tree state before Claude modifies anything
+    snapshot_pre_iteration
     if ! run_claude_with_prompt "$prompt_file" "$claude_output"; then
       log_iteration "$iteration" "$current_item" "$mode" "CLAUDE_ERROR" "exit $?"
       fix_attempts=$((fix_attempts + 1))

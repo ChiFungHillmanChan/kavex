@@ -9,7 +9,7 @@ You are the Kova Loop **launcher**. Your ONLY job is to start the bash orchestra
 
 <CRITICAL>
 You do NOT self-orchestrate phases. You do NOT implement code yourself.
-The bash script `.claude/hooks/kova-loop.sh` is the boss. It:
+The bash script `hooks/kova-loop.sh` is the boss. It:
 1. Calls `claude -p` for each implementation phase (separate session per iteration)
 2. Runs `verify-gate.sh` from bash after each implementation (build, test, lint, typecheck)
 3. Runs `run-code-review.sh` from bash for code review
@@ -38,8 +38,12 @@ Parse the PRD file path from `$ARGUMENTS` (first non-flag argument).
 Run these checks via Bash:
 ```bash
 test -f "<prd-file>" && echo "PRD_OK" || echo "PRD_MISSING"
-test -f ".claude/hooks/kova-loop.sh" && echo "LOOP_OK" || echo "LOOP_MISSING"
-test -f ".claude/hooks/lib/detect-stack.sh" && echo "LIB_OK" || echo "LIB_MISSING"
+# Check both plugin path and legacy path for kova-loop.sh
+KOVA_LOOP="${CLAUDE_PLUGIN_ROOT:-}/hooks/kova-loop.sh"
+[ -f "$KOVA_LOOP" ] || KOVA_LOOP=".claude/hooks/kova-loop.sh"
+test -f "$KOVA_LOOP" && echo "LOOP_OK" || echo "LOOP_MISSING"
+KOVA_LIB="$(dirname "$KOVA_LOOP")/lib/detect-stack.sh"
+test -f "$KOVA_LIB" && echo "LIB_OK" || echo "LIB_MISSING"
 command -v jq &>/dev/null && echo "JQ_OK" || echo "JQ_MISSING"
 git rev-parse --is-inside-work-tree 2>/dev/null && echo "GIT_OK" || echo "GIT_MISSING"
 ```
@@ -50,7 +54,7 @@ If any MISSING, report and STOP.
 
 Show a preview by running:
 ```bash
-bash .claude/hooks/kova-loop.sh "<prd-file>" --dry-run
+bash "$KOVA_LOOP" "<prd-file>" --dry-run
 ```
 
 If `--dry-run` was in `$ARGUMENTS`, STOP here.
@@ -63,7 +67,7 @@ Wait for confirmation.
 Run the bash orchestrator. This will take a while — it spawns separate Claude sessions per iteration.
 
 ```bash
-bash .claude/hooks/kova-loop.sh $ARGUMENTS 2>&1
+bash "$KOVA_LOOP" $ARGUMENTS 2>&1
 ```
 
 **IMPORTANT:** This command will run for a long time. Use the Bash tool with a high timeout (600000ms / 10 minutes). If it times out, check `.kova-loop/LOOP_PROGRESS.md` for status.

@@ -11,17 +11,17 @@ setup() {
 
 # Extract hook filenames referenced in kova activate's JSON config
 _activate_hook_refs() {
-  grep -oE '\.claude/hooks/[a-z_-]+\.sh' "$KOVA_ROOT/kova" | sort -u | sed 's|\.claude/hooks/||'
+  grep -oE '\.claude/hooks/[a-z_-]+\.sh' "$KOVA_ROOT/scripts/kova" | sort -u | sed 's|\.claude/hooks/||'
 }
 
 # Extract hook filenames checked in kova status's for-loop
 _status_hook_refs() {
-  grep -A1 'for hook in' "$KOVA_ROOT/kova" | grep -oE '[a-z_-]+\.sh' | sort -u
+  grep -A1 'for hook in' "$KOVA_ROOT/scripts/kova" | grep -oE '[a-z_-]+\.sh' | sort -u
 }
 
 # Extract hook filenames listed in kova help text
 _help_hook_refs() {
-  sed -n '/HOOKS (automatic/,/SUPPORTED LANGUAGES/p' "$KOVA_ROOT/kova" \
+  sed -n '/HOOKS (automatic/,/SUPPORTED LANGUAGES/p' "$KOVA_ROOT/scripts/kova" \
     | grep -oE '[a-z_-]+\.sh' | sort -u
 }
 
@@ -31,9 +31,9 @@ _installed_hooks() {
     | sed 's|hooks/||' | sort -u
 }
 
-# Extract actual hook files present in .claude/hooks/
+# Extract actual hook files present in hooks/
 _actual_hook_files() {
-  ls "$KOVA_ROOT/.claude/hooks/"*.sh 2>/dev/null | xargs -n1 basename | sort -u
+  ls "$KOVA_ROOT/hooks/"*.sh 2>/dev/null | xargs -n1 basename | sort -u
 }
 
 # --- Core regression: activate only references installed hooks ---
@@ -96,7 +96,7 @@ _actual_hook_files() {
 
   while IFS= read -r hook; do
     if ! echo "$actual" | grep -qx "$hook"; then
-      echo "MISSING: kova activate references '$hook' but file does not exist in .claude/hooks/" >&2
+      echo "MISSING: kova activate references '$hook' but file does not exist in hooks/" >&2
       missing=$((missing + 1))
     fi
   done < <(_activate_hook_refs)
@@ -131,7 +131,7 @@ _actual_hook_files() {
   local missing=0
 
   while IFS= read -r hook; do
-    if [ ! -f "$KOVA_ROOT/.claude/hooks/$hook" ]; then
+    if [ ! -f "$KOVA_ROOT/hooks/$hook" ]; then
       echo "MISSING: install.sh references '$hook' but source file does not exist" >&2
       missing=$((missing + 1))
     fi
@@ -142,14 +142,14 @@ _actual_hook_files() {
 
 # --- Bidirectional: all actual hooks are referenced somewhere ---
 
-@test "regression: all hooks in .claude/hooks/ are referenced by install.sh" {
+@test "regression: all hooks in hooks/ are referenced by install.sh" {
   local unreferenced=0
   local installed
   installed=$(_installed_hooks)
 
   while IFS= read -r hook; do
     if ! echo "$installed" | grep -qx "$hook"; then
-      echo "UNREFERENCED: '$hook' exists in .claude/hooks/ but install.sh does not copy it" >&2
+      echo "UNREFERENCED: '$hook' exists in hooks/ but install.sh does not copy it" >&2
       unreferenced=$((unreferenced + 1))
     fi
   done < <(_actual_hook_files)

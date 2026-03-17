@@ -40,7 +40,7 @@ run_install_dry() {
 run_kova() {
   local target="${1:-$SANDBOX}"
   shift
-  (cd "$target" && bash "$KOVA_ROOT/kova" "$@")
+  (cd "$target" && bash "$KOVA_ROOT/scripts/kova" "$@")
 }
 
 # List of hook scripts that install.sh is expected to install

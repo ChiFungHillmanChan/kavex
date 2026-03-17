@@ -1,5 +1,58 @@
 # Changelog
 
+## [0.3.0] - 2026-03-11
+
+### Added
+
+- **Plugin Distribution** — Kova is now available as a Claude Code plugin
+  - `kova` (lightweight): slash commands + engineering protocol skill
+  - `kova-full` (complete): + hooks, verification gate, auto-format, commit gate, team loop
+  - Plugin manifests in `.claude-plugin/` and `plugins/kova/.claude-plugin/`
+  - `hooks/hooks.json` for plugin hook definitions using `CLAUDE_PLUGIN_ROOT`
+
+- **Cross-Model Diagnostics** — Optional Codex CLI integration
+  - `hooks/lib/codex-assist.sh` — Send failure context to Codex for cross-model diagnosis
+  - `hooks/lib/run-code-review.sh` — Optional Codex review alongside Claude reviewers
+  - Portable timeout handling (no GNU coreutils dependency)
+  - Non-blocking: loop continues if Codex unavailable
+
+- **Engineering Protocol Skill** — `CLAUDE.md` repackaged as a discoverable skill
+  - `skills/engineering-protocol/SKILL.md`
+
+- **Kova Planning Command** — `/kova:plan` interactive planning with clarifying questions
+
+### Changed
+
+- **Repo Restructure** — Hooks, commands, and scripts moved to top-level directories
+  - `hooks/` (was `.claude/hooks/`)
+  - `commands/` (was `.claude/commands/`)
+  - `scripts/` (was root-level `kova`, `kova-monitor`)
+  - Legacy install continues to copy into `.claude/` for target projects
+- **Atomic Per-Item Commits** — Replaced `git add -A` with snapshot-based staging
+  - Snapshots working tree state before each Claude session
+  - Only stages files that actually changed during the iteration (diff against snapshot)
+  - New untracked files only staged if they appeared during the iteration (not pre-existing)
+  - Sensitive file patterns (`*.env`, `*.pem`, `*.key`, `*.p12`, `credentials/`, `secrets/`) always excluded
+- **Legacy Install Fix** — `install.sh` now generates correct `.claude/hooks/` paths in settings
+  - Previously copied repo's `settings.json` which referenced `$CLAUDE_PROJECT_DIR/hooks/`
+  - Fresh legacy installs now work without needing `kova activate` to repair paths
+- **CI Updated** — GitHub Actions workflow references current repo layout (`scripts/`, `hooks/`)
+
+### Fixed
+
+- Legacy install path mismatch: `settings.json` hook paths now match installed file locations
+- CI workflow linting non-existent `.claude/hooks/` paths
+- `CONTRIBUTING.md` referenced old `.claude/hooks/` source paths instead of `hooks/`
+- Stale test counts in docs (177 → 213)
+
+### Tests
+
+- 36 new tests (213 total, up from 177)
+  - Codex assist tests
+  - Kova statusline tests
+  - Verify-on-stop self-heal tests
+  - Hook-name consistency regression tests
+
 ## [0.2.0] - 2026-02-21
 
 ### Added

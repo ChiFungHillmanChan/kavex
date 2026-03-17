@@ -33,13 +33,13 @@ teardown() {
 # --- kova CLI delegates monitor ---
 
 @test "kova help: mentions monitor command" {
-  run bash "$KOVA_ROOT/kova" help
+  run bash "$KOVA_ROOT/scripts/kova" help
   assert_success
   assert_output --partial "monitor"
 }
 
 @test "kova help: mentions setup command" {
-  run bash "$KOVA_ROOT/kova" help
+  run bash "$KOVA_ROOT/scripts/kova" help
   assert_success
   assert_output --partial "setup"
 }

@@ -42,6 +42,9 @@ PROJECT_ROOT="$(find_project_root)"
 SETTINGS_LOCAL="$PROJECT_ROOT/.claude/settings.local.json"
 SETTINGS="$PROJECT_ROOT/.claude/settings.json"
 
+# Resolve kova root: use CLAUDE_PLUGIN_ROOT if available, else script's parent
+KOVA_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+
 # ─────────────────────────────────────────────
 # kova help
 # ─────────────────────────────────────────────
@@ -168,10 +171,10 @@ cmd_status() {
     echo -e "  Hooks:           ${YELLOW}none active${RESET} (run: kova activate)"
   fi
 
-  # Check hook scripts exist
+  # Check hook scripts exist in the project (legacy install path or plugin root)
   local missing_hooks=0
   for hook in format.sh block-dangerous.sh protect-files.sh verify-on-stop.sh kova-loop.sh kova-commit-gate.sh; do
-    if [ ! -f "$PROJECT_ROOT/.claude/hooks/$hook" ]; then
+    if [ ! -f "$PROJECT_ROOT/.claude/hooks/$hook" ] && [ ! -f "$PROJECT_ROOT/hooks/$hook" ]; then
       missing_hooks=$((missing_hooks + 1))
     fi
   done
@@ -182,22 +185,24 @@ cmd_status() {
     echo -e "  Hook scripts:    ${GREEN}all present${RESET}"
   fi
 
-  # Check commands
+  # Check commands in the project (legacy or plugin root)
   local cmd_count=0
-  if [ -d "$PROJECT_ROOT/.claude/commands" ]; then
+  if [ -d "$PROJECT_ROOT/commands" ]; then
+    cmd_count=$(find "$PROJECT_ROOT/commands" -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
+  elif [ -d "$PROJECT_ROOT/.claude/commands" ]; then
     cmd_count=$(find "$PROJECT_ROOT/.claude/commands" -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
   fi
   echo -e "  Commands:        ${CYAN}${cmd_count} available${RESET}"
 
-  # Check shared lib
-  if [ -f "$PROJECT_ROOT/.claude/hooks/lib/detect-stack.sh" ]; then
+  # Check shared lib in the project
+  if [ -f "$PROJECT_ROOT/hooks/lib/detect-stack.sh" ] || [ -f "$PROJECT_ROOT/.claude/hooks/lib/detect-stack.sh" ]; then
     echo -e "  Shared library:  ${GREEN}OK${RESET}"
   else
     echo -e "  Shared library:  ${RED}MISSING${RESET}"
   fi
 
-  # Check Team Loop
-  if [ -f "$PROJECT_ROOT/.claude/commands/kova/loop.md" ]; then
+  # Check Team Loop in the project
+  if [ -f "$PROJECT_ROOT/commands/kova/loop.md" ] || [ -f "$PROJECT_ROOT/.claude/commands/kova/loop.md" ]; then
     echo -e "  Team Loop:       ${GREEN}available${RESET}"
   else
     echo -e "  Team Loop:       ${YELLOW}not installed${RESET}"
@@ -245,7 +250,8 @@ cmd_activate() {
     fi
   fi
 
-  # Define hooks config — must reference only scripts installed by install.sh
+  # Define hooks config — references scripts installed by install.sh into .claude/hooks/
+  # Legacy install path; plugin mode uses hooks/hooks.json instead
   local hooks_json
   hooks_json=$(cat <<'HOOKS'
 {
@@ -339,13 +345,9 @@ cmd_deactivate() {
 # kova install
 # ─────────────────────────────────────────────
 cmd_install() {
-  # Find the kova source directory (where this script lives)
-  local SCRIPT_DIR
-  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-  # Check if install.sh exists alongside this script
-  if [ -f "$SCRIPT_DIR/install.sh" ]; then
-    bash "$SCRIPT_DIR/install.sh" "$@"
+  # Check if install.sh exists in kova root or alongside this script
+  if [ -f "$KOVA_ROOT/install.sh" ]; then
+    bash "$KOVA_ROOT/install.sh" "$@"
   else
     cat <<'INSTALL'
 

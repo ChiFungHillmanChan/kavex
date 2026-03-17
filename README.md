@@ -3,7 +3,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Shell](https://img.shields.io/badge/Shell-Bash-green.svg)](https://www.gnu.org/software/bash/)
 [![Claude Code](https://img.shields.io/badge/Claude_Code-Compatible-blueviolet.svg)](https://docs.anthropic.com/en/docs/claude-code)
-[![Tests](https://img.shields.io/badge/Tests-193%20passing-brightgreen.svg)](#testing)
+[![Tests](https://img.shields.io/badge/Tests-213%20passing-brightgreen.svg)](#testing)
+[![Plugin](https://img.shields.io/badge/Claude_Code-Plugin-blueviolet.svg)](https://docs.anthropic.com/en/docs/claude-code)
 [![Languages](https://img.shields.io/badge/Docs-EN%20%7C%20%E7%B2%B5%E8%AA%9E%20%7C%20%E4%B8%AD%E6%96%87-orange.svg)](#documentation)
 
 > Autonomous engineering protocol for Claude Code: safe by default, verified before stop, and built to ship.
@@ -13,6 +14,17 @@
 ---
 
 ## Quick Start
+
+### Option A: Install as Claude Code Plugin (recommended)
+
+```bash
+claude /install kova          # Lightweight: commands + skills
+claude /install kova-full     # Full suite: + hooks + enforcement
+```
+
+That's it — no cloning, no scripts. Commands and skills are available immediately.
+
+### Option B: Legacy Install (clone + install.sh)
 
 ```bash
 # 1) Clone once
@@ -31,6 +43,15 @@ Optional global CLI:
 bash ~/kova/install.sh --global
 kova setup
 ```
+
+### Two Plugins
+
+| Plugin | What you get |
+|--------|-------------|
+| **kova** | Slash commands (`/plan`, `/verify-app`, `/code-review`, etc.) + engineering protocol skill |
+| **kova-full** | Everything in kova + safety hooks, verification gate, auto-format, commit gate, team loop |
+
+Choose `kova` if you want the workflow without enforcement. Choose `kova-full` if you want the full autonomous engineering system.
 
 **Requirements:** [Claude Code](https://docs.anthropic.com/en/docs/claude-code), `jq` (required), `gh` (optional), [`@openai/codex`](https://www.npmjs.com/package/@openai/codex) (optional)
 
@@ -164,7 +185,7 @@ See the [full guide](docs/en/README.md) for detailed explanations of each featur
 
 ## Testing
 
-193 automated tests across three suites:
+213 automated tests across three suites:
 
 ```bash
 npm install     # Install test dependencies

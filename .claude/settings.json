@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/format.sh",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/format.sh",
             "timeout": 30
           }
         ]
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/verify-on-stop.sh",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/verify-on-stop.sh",
             "timeout": 60
           }
         ]
@@ -29,12 +29,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/block-dangerous.sh",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/block-dangerous.sh",
             "timeout": 5
           },
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/kova-commit-gate.sh",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/kova-commit-gate.sh",
             "timeout": 5
           }
         ]
@@ -44,7 +44,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/protect-files.sh",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/protect-files.sh",
             "timeout": 5
           }
         ]

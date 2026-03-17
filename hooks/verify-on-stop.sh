@@ -4,8 +4,12 @@
 # Test layers (2-4) use run_and_retry for flaky test detection
 # Max 3 retries before writing DEBUG_LOG.md and spawning self-healing session
 
-source "$(dirname "$0")/lib/detect-stack.sh"
-source "$(dirname "$0")/lib/codex-assist.sh"
+_HOOK_DIR="$(dirname "$0")"
+_LIB_DIR="$_HOOK_DIR/lib"
+# Fallback for when invoked with CLAUDE_PLUGIN_ROOT (plugin mode)
+[ -d "$_LIB_DIR" ] || _LIB_DIR="${CLAUDE_PLUGIN_ROOT:-$_HOOK_DIR}/hooks/lib"
+source "$_LIB_DIR/detect-stack.sh"
+source "$_LIB_DIR/codex-assist.sh"
 
 INPUT=$(cat)
 STOP_ACTIVE=$(echo "$INPUT" | jq -r '.stop_hook_active // false' 2>/dev/null)

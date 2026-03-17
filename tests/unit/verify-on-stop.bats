@@ -5,7 +5,7 @@ setup() {
   _common_setup
 
   SANDBOX="$(mktemp -d)"
-  HOOK="$KOVA_ROOT/.claude/hooks/verify-on-stop.sh"
+  HOOK="$KOVA_ROOT/hooks/verify-on-stop.sh"
 
   # Initialize a real git repo in the sandbox so git diff --quiet works
   git init "$SANDBOX" >/dev/null 2>&1

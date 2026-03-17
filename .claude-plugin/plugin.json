@@ -1,0 +1,20 @@
+{
+  "name": "kova-full",
+  "description": "Full Kova engineering suite — autonomous verification, enforcement hooks, code review, team loop",
+  "author": {
+    "name": "Hillman Chan"
+  },
+  "version": "0.3.0",
+  "homepage": "https://github.com/ChiFungHillmanChan/kova",
+  "repository": "https://github.com/ChiFungHillmanChan/kova",
+  "license": "MIT",
+  "keywords": [
+    "engineering",
+    "verification",
+    "code-review",
+    "workflow",
+    "autonomous",
+    "hooks",
+    "enforcement"
+  ]
+}

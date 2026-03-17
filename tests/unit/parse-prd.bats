@@ -7,7 +7,7 @@ setup() {
   SANDBOX="$(mktemp -d)"
   cd "$SANDBOX"
 
-  source "$KOVA_ROOT/.claude/hooks/lib/parse-prd.sh"
+  source "$KOVA_ROOT/hooks/lib/parse-prd.sh"
 }
 
 teardown() {

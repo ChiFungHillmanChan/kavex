@@ -10,7 +10,7 @@ Kova uses [Bats](https://github.com/bats-core/bats-core) for shell testing. **Al
 # Install test dependencies (one time)
 npm install
 
-# Run full suite (178 tests)
+# Run full suite (213 tests)
 npm test
 
 # Run individual suites
@@ -30,19 +30,19 @@ npm run lint
 
 ## Adding Support for a New Language
 
-1. **Detection** — Add lockfile/config detection in `.claude/hooks/lib/detect-stack.sh` (e.g., check for `go.mod`, `Cargo.toml`)
-2. **Verification** — Add build, test, lint, and typecheck commands in `.claude/hooks/lib/verify-gate.sh`
-3. **Formatting** — Add the formatter invocation in `.claude/hooks/format.sh`
-4. **Verify command** — Update `.claude/commands/verify-app.md` to include the new language's tools
+1. **Detection** — Add lockfile/config detection in `hooks/lib/detect-stack.sh` (e.g., check for `go.mod`, `Cargo.toml`)
+2. **Verification** — Add build, test, lint, and typecheck commands in `hooks/lib/verify-gate.sh`
+3. **Formatting** — Add the formatter invocation in `hooks/format.sh`
+4. **Verify command** — Update `commands/verify-app.md` to include the new language's tools
 5. **Settings** — Update `.claude/settings.json` deny patterns if the language has generated files that should be protected
 6. **Tests** — Add detection test cases in `tests/unit/detect-stack.bats`
 
 ## Adding a New Hook
 
-Hooks are shell scripts in `.claude/hooks/` that run automatically based on tool matchers.
+Hooks are shell scripts in `hooks/` that run automatically based on tool matchers.
 
-1. Create a new `.sh` file in `.claude/hooks/`
-2. Register it in `.claude/settings.json` (or `settings.local.json`) under the `hooks` key with a `matcher` (tool trigger) and `command` (path to script)
+1. Create a new `.sh` file in `hooks/`
+2. Register it in `hooks/hooks.json` (plugin mode) or `.claude/settings.json` (legacy mode) under the `hooks` key with a `matcher` (tool trigger) and `command` (path to script)
 3. Add the hook to the install payload in `install.sh`
 4. Update `kova` CLI (`cmd_help`, `cmd_status`, `cmd_activate`) to reference the new hook
 5. Run `npm run test:regression` to verify hook-name consistency
@@ -51,9 +51,9 @@ Hooks are shell scripts in `.claude/hooks/` that run automatically based on tool
 
 ## Adding a New Command
 
-Slash commands are Markdown files in `.claude/commands/`.
+Slash commands are Markdown files in `commands/`.
 
-1. Create a `.md` file in `.claude/commands/` — the filename becomes the command name (e.g., `my-command.md` -> `/my-command`)
+1. Create a `.md` file in `commands/` — the filename becomes the command name (e.g., `my-command.md` -> `/my-command`)
 2. Write the prompt/instructions Claude should follow when the command is invoked
 3. Use clear, imperative instructions
 4. Reference existing commands for style and structure
@@ -68,7 +68,7 @@ Slash commands are Markdown files in `.claude/commands/`.
 ## PR Expectations
 
 - [ ] `npm run lint` — all shell scripts pass `shellcheck` with no warnings
-- [ ] `npm test` — all 178 tests pass (unit, integration, regression)
+- [ ] `npm test` — all 213 tests pass (unit, integration, regression)
 - [ ] Regression suite confirms hook-name consistency
 - [ ] Tested with at least one language/ecosystem
 - [ ] `README.md` updated if adding new language support or hooks

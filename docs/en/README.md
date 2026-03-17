@@ -41,6 +41,22 @@ Kova is a bundle of rules, scripts, and commands. You install it into any projec
 
 ## Installation
 
+### Option A: Claude Code Plugin (recommended)
+
+```bash
+claude /install kova          # Lightweight: commands + skills only
+claude /install kova-full     # Full suite: commands + skills + hooks + enforcement
+```
+
+No cloning, no scripts. Everything is available immediately after install.
+
+| Plugin | Includes |
+|--------|----------|
+| **kova** | Slash commands + engineering protocol skill |
+| **kova-full** | Everything in kova + safety hooks, verification gate, auto-format, commit gate, team loop |
+
+### Option B: Legacy Install (clone + install.sh)
+
 ```bash
 # From the kova directory:
 bash install.sh

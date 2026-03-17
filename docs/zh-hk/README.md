@@ -41,6 +41,22 @@ Kova 係一套「規則 + 腳本 + 指令」嘅組合包。你裝落去任何一
 
 ## 安裝
 
+### 方法 A：Claude Code Plugin（推薦）
+
+```bash
+claude /install kova          # 輕量版：指令 + 技能
+claude /install kova-full     # 完整版：指令 + 技能 + hooks + 執行保障
+```
+
+唔使 clone，唔使跑腳本，裝完即刻用得。
+
+| Plugin | 包含咩 |
+|--------|--------|
+| **kova** | 斜線指令 + 工程協議技能 |
+| **kova-full** | kova 所有嘢 + 安全 hooks、驗證閘門、自動格式化、commit 閘門、Team Loop |
+
+### 方法 B：傳統安裝（clone + install.sh）
+
 ```bash
 # 由 kova 目錄入面行：
 bash install.sh

@@ -7,7 +7,7 @@ setup() {
   SANDBOX="$(mktemp -d)"
   cd "$SANDBOX"
 
-  source "$KOVA_ROOT/.claude/hooks/lib/detect-stack.sh"
+  source "$KOVA_ROOT/hooks/lib/detect-stack.sh"
 }
 
 teardown() {

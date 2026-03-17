@@ -101,7 +101,7 @@ cmd_start() {
     echo "  Fedora: sudo dnf install tmux" >&2
     echo "" >&2
     echo "Or run the loop directly:" >&2
-    echo "  bash .claude/hooks/kova-loop.sh $*" >&2
+    echo "  bash hooks/kova-loop.sh $*" >&2
     exit 1
   fi
 
@@ -117,8 +117,20 @@ cmd_start() {
     exit 1
   fi
 
+  # Find kova-loop.sh: check plugin path, then legacy path
+  local loop_script=""
+  local KOVA_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+  if [ -f "$KOVA_ROOT/hooks/kova-loop.sh" ]; then
+    loop_script="$KOVA_ROOT/hooks/kova-loop.sh"
+  elif [ -f "$PROJECT_ROOT/.claude/hooks/kova-loop.sh" ]; then
+    loop_script="$PROJECT_ROOT/.claude/hooks/kova-loop.sh"
+  else
+    echo -e "${RED}Error: kova-loop.sh not found.${RESET}" >&2
+    exit 1
+  fi
+
   local loop_cmd
-  loop_cmd="bash $(printf '%q' "$PROJECT_ROOT/.claude/hooks/kova-loop.sh")"
+  loop_cmd="bash $(printf '%q' "$loop_script")"
   for arg in "$@"; do
     loop_cmd+=" $(printf '%q' "$arg")"
   done

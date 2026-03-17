@@ -8,9 +8,9 @@ setup() {
   mkdir -p "$SANDBOX/.claude/hooks/lib"
 
   # Copy the statusline script to sandbox
-  cp "$KOVA_ROOT/.claude/hooks/lib/kova-statusline.sh" "$SANDBOX/.claude/hooks/lib/"
+  cp "$KOVA_ROOT/hooks/lib/kova-statusline.sh" "$SANDBOX/.claude/hooks/lib/"
 
-  source "$KOVA_ROOT/.claude/hooks/lib/kova-statusline.sh"
+  source "$KOVA_ROOT/hooks/lib/kova-statusline.sh"
 }
 
 teardown() {
@@ -218,7 +218,7 @@ JSON
 
 @test "kova-statusline.sh: runs standalone and outputs indicator" {
   echo '{}' > "$SANDBOX/.claude/settings.json"
-  run bash "$KOVA_ROOT/.claude/hooks/lib/kova-statusline.sh" "$SANDBOX"
+  run bash "$KOVA_ROOT/hooks/lib/kova-statusline.sh" "$SANDBOX"
   assert_success
   assert_output --partial "[kova off]"
 }
@@ -235,7 +235,7 @@ JSON
   }
 }
 JSON
-  run bash "$KOVA_ROOT/.claude/hooks/lib/kova-statusline.sh" "$SANDBOX"
+  run bash "$KOVA_ROOT/hooks/lib/kova-statusline.sh" "$SANDBOX"
   assert_success
   assert_output --partial "[KOVA]"
 }

@@ -7,7 +7,7 @@ setup() {
   SANDBOX="$(mktemp -d)"
   cd "$SANDBOX"
 
-  source "$KOVA_ROOT/.claude/hooks/lib/codex-assist.sh"
+  source "$KOVA_ROOT/hooks/lib/codex-assist.sh"
 }
 
 teardown() {
@@ -17,7 +17,7 @@ teardown() {
 # --- codex_available ---
 
 @test "codex_available: returns 1 when codex is not installed" {
-  run env PATH="/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/.claude/hooks/lib/codex-assist.sh' && codex_available"
+  run env PATH="/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/hooks/lib/codex-assist.sh' && codex_available"
   assert_failure
 }
 
@@ -25,14 +25,14 @@ teardown() {
   mkdir -p "$SANDBOX/bin"
   printf '#!/bin/bash\necho "stub"\n' > "$SANDBOX/bin/codex"
   chmod +x "$SANDBOX/bin/codex"
-  run env PATH="$SANDBOX/bin:/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/.claude/hooks/lib/codex-assist.sh' && codex_available"
+  run env PATH="$SANDBOX/bin:/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/hooks/lib/codex-assist.sh' && codex_available"
   assert_success
 }
 
 # --- codex_diagnose ---
 
 @test "codex_diagnose: returns 1 when codex is not available" {
-  run env PATH="/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/.claude/hooks/lib/codex-assist.sh' && codex_diagnose /dev/null /dev/null"
+  run env PATH="/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/hooks/lib/codex-assist.sh' && codex_diagnose /dev/null /dev/null"
   assert_failure
 }
 
@@ -40,7 +40,7 @@ teardown() {
   mkdir -p "$SANDBOX/bin"
   printf '#!/bin/bash\necho "diagnosis"\n' > "$SANDBOX/bin/codex"
   chmod +x "$SANDBOX/bin/codex"
-  run env PATH="$SANDBOX/bin:/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/.claude/hooks/lib/codex-assist.sh' && codex_diagnose '$SANDBOX/nonexistent.md' '$SANDBOX/out.md'"
+  run env PATH="$SANDBOX/bin:/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/hooks/lib/codex-assist.sh' && codex_diagnose '$SANDBOX/nonexistent.md' '$SANDBOX/out.md'"
   assert_failure
 }
 
@@ -49,7 +49,7 @@ teardown() {
   printf '#!/bin/bash\necho "diagnosis"\n' > "$SANDBOX/bin/codex"
   chmod +x "$SANDBOX/bin/codex"
   touch "$SANDBOX/empty.md"
-  run env PATH="$SANDBOX/bin:/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/.claude/hooks/lib/codex-assist.sh' && codex_diagnose '$SANDBOX/empty.md' '$SANDBOX/out.md'"
+  run env PATH="$SANDBOX/bin:/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/hooks/lib/codex-assist.sh' && codex_diagnose '$SANDBOX/empty.md' '$SANDBOX/out.md'"
   assert_failure
 }
 
@@ -62,7 +62,7 @@ STUB
   chmod +x "$SANDBOX/bin/codex"
   echo "Test failure: cannot read property of undefined" > "$SANDBOX/context.md"
 
-  run env PATH="$SANDBOX/bin:/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/.claude/hooks/lib/codex-assist.sh' && codex_diagnose '$SANDBOX/context.md' '$SANDBOX/out.md'"
+  run env PATH="$SANDBOX/bin:/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/hooks/lib/codex-assist.sh' && codex_diagnose '$SANDBOX/context.md' '$SANDBOX/out.md'"
   assert_success
   run cat "$SANDBOX/out.md"
   assert_output --partial "Cross-Model Diagnosis [codex]"
@@ -78,7 +78,7 @@ STUB
   chmod +x "$SANDBOX/bin/codex"
   echo "Some failure" > "$SANDBOX/context.md"
 
-  run env PATH="$SANDBOX/bin:/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/.claude/hooks/lib/codex-assist.sh' && codex_diagnose '$SANDBOX/context.md' '$SANDBOX/out.md'"
+  run env PATH="$SANDBOX/bin:/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/hooks/lib/codex-assist.sh' && codex_diagnose '$SANDBOX/context.md' '$SANDBOX/out.md'"
   assert_failure
 }
 
@@ -91,7 +91,7 @@ STUB
   chmod +x "$SANDBOX/bin/codex"
   echo "Some failure" > "$SANDBOX/context.md"
 
-  run env PATH="$SANDBOX/bin:/usr/bin:/bin" CODEX_TIMEOUT=1 /bin/bash -c "source '$KOVA_ROOT/.claude/hooks/lib/codex-assist.sh' && codex_diagnose '$SANDBOX/context.md' '$SANDBOX/out.md'"
+  run env PATH="$SANDBOX/bin:/usr/bin:/bin" CODEX_TIMEOUT=1 /bin/bash -c "source '$KOVA_ROOT/hooks/lib/codex-assist.sh' && codex_diagnose '$SANDBOX/context.md' '$SANDBOX/out.md'"
   assert_failure
 }
 
@@ -106,14 +106,14 @@ STUB
   # Create a file with 600 lines
   seq 1 600 > "$SANDBOX/big-context.md"
 
-  run env PATH="$SANDBOX/bin:/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/.claude/hooks/lib/codex-assist.sh' && codex_diagnose '$SANDBOX/big-context.md' '$SANDBOX/out.md'"
+  run env PATH="$SANDBOX/bin:/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/hooks/lib/codex-assist.sh' && codex_diagnose '$SANDBOX/big-context.md' '$SANDBOX/out.md'"
   assert_success
 }
 
 # --- codex_review ---
 
 @test "codex_review: returns 1 when codex is not available" {
-  run env PATH="/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/.claude/hooks/lib/codex-assist.sh' && codex_review /dev/null /dev/null"
+  run env PATH="/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/hooks/lib/codex-assist.sh' && codex_review /dev/null /dev/null"
   assert_failure
 }
 
@@ -121,7 +121,7 @@ STUB
   mkdir -p "$SANDBOX/bin"
   printf '#!/bin/bash\necho "review"\n' > "$SANDBOX/bin/codex"
   chmod +x "$SANDBOX/bin/codex"
-  run env PATH="$SANDBOX/bin:/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/.claude/hooks/lib/codex-assist.sh' && codex_review '$SANDBOX/nonexistent.diff' '$SANDBOX/out.md'"
+  run env PATH="$SANDBOX/bin:/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/hooks/lib/codex-assist.sh' && codex_review '$SANDBOX/nonexistent.diff' '$SANDBOX/out.md'"
   assert_failure
 }
 
@@ -135,7 +135,7 @@ STUB
   chmod +x "$SANDBOX/bin/codex"
   echo "+console.log('hello')" > "$SANDBOX/diff.txt"
 
-  run env PATH="$SANDBOX/bin:/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/.claude/hooks/lib/codex-assist.sh' && codex_review '$SANDBOX/diff.txt' '$SANDBOX/out.md'"
+  run env PATH="$SANDBOX/bin:/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/hooks/lib/codex-assist.sh' && codex_review '$SANDBOX/diff.txt' '$SANDBOX/out.md'"
   assert_success
   run cat "$SANDBOX/out.md"
   assert_output --partial "Cross-Model Review [codex]"
@@ -151,7 +151,7 @@ STUB
   chmod +x "$SANDBOX/bin/codex"
   echo "+some code" > "$SANDBOX/diff.txt"
 
-  run env PATH="$SANDBOX/bin:/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/.claude/hooks/lib/codex-assist.sh' && codex_review '$SANDBOX/diff.txt' '$SANDBOX/out.md'"
+  run env PATH="$SANDBOX/bin:/usr/bin:/bin" /bin/bash -c "source '$KOVA_ROOT/hooks/lib/codex-assist.sh' && codex_review '$SANDBOX/diff.txt' '$SANDBOX/out.md'"
   assert_failure
 }
 

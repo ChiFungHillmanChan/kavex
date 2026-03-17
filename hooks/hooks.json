@@ -1,0 +1,54 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat | \"${CLAUDE_PLUGIN_ROOT}/hooks/block-dangerous.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "cat | \"${CLAUDE_PLUGIN_ROOT}/hooks/kova-commit-gate.sh\"",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat | \"${CLAUDE_PLUGIN_ROOT}/hooks/protect-files.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat | \"${CLAUDE_PLUGIN_ROOT}/hooks/format.sh\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat | \"${CLAUDE_PLUGIN_ROOT}/hooks/verify-on-stop.sh\"",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}

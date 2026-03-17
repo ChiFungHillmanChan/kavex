@@ -24,7 +24,10 @@ You must run each command and read its output.
 Run this via Bash to detect the project's package manager and languages:
 
 ```bash
-source .claude/hooks/lib/detect-stack.sh 2>/dev/null
+# Try plugin path first, then legacy path
+DETECT_STACK="${CLAUDE_PLUGIN_ROOT:-}/hooks/lib/detect-stack.sh"
+[ -f "$DETECT_STACK" ] || DETECT_STACK=".claude/hooks/lib/detect-stack.sh"
+source "$DETECT_STACK" 2>/dev/null
 detect_pm 2>/dev/null
 detect_languages 2>/dev/null
 echo "PM=$PM"

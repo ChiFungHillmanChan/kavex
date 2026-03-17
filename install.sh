@@ -67,11 +67,11 @@ if $GLOBAL_INSTALL; then
   echo "Installing Kova globally to: $GLOBAL_DIR"
   echo ""
 
-  cp "$SCRIPT_DIR/kova" "$GLOBAL_DIR/kova"
+  cp "$SCRIPT_DIR/scripts/kova" "$GLOBAL_DIR/kova"
   chmod +x "$GLOBAL_DIR/kova"
   echo "  kova -> $GLOBAL_DIR/kova"
 
-  cp "$SCRIPT_DIR/kova-monitor" "$GLOBAL_DIR/kova-monitor"
+  cp "$SCRIPT_DIR/scripts/kova-monitor" "$GLOBAL_DIR/kova-monitor"
   chmod +x "$GLOBAL_DIR/kova-monitor"
   echo "  kova-monitor -> $GLOBAL_DIR/kova-monitor"
 
@@ -146,7 +146,12 @@ if $DRY_RUN; then
   exit 0
 fi
 
-echo "Installing Kova Protocol into: $TARGET_DIR"
+echo ""
+echo "NOTE: Plugin installation is now preferred:"
+echo "  claude /install kova       (lightweight — commands + skills)"
+echo "  claude /install kova-full  (complete — + hooks + enforcement)"
+echo ""
+echo "Continuing with legacy install into: $TARGET_DIR"
 echo ""
 
 # Create directories
@@ -154,67 +159,179 @@ mkdir -p "$TARGET_DIR/.claude/commands/kova/phases"
 mkdir -p "$TARGET_DIR/.claude/hooks/lib"
 
 # Copy settings (backup if exists)
+# NOTE: The repo's .claude/settings.json uses "$CLAUDE_PROJECT_DIR"/hooks/... paths
+# which work for the repo itself (plugin development) but NOT for legacy installs
+# where hooks live at .claude/hooks/. We generate the correct settings inline.
 if [ -f "$TARGET_DIR/.claude/settings.json" ]; then
   echo "  .claude/settings.json already exists. Backing up to settings.json.bak"
   cp "$TARGET_DIR/.claude/settings.json" "$TARGET_DIR/.claude/settings.json.bak"
 fi
-cp "$SCRIPT_DIR/.claude/settings.json" "$TARGET_DIR/.claude/settings.json"
-echo "  settings.json installed"
+cat > "$TARGET_DIR/.claude/settings.json" <<'SETTINGS'
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat | .claude/hooks/format.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat | .claude/hooks/verify-on-stop.sh",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat | .claude/hooks/block-dangerous.sh",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "cat | .claude/hooks/kova-commit-gate.sh",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat | .claude/hooks/protect-files.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(bun run *)",
+      "Bash(pnpm run *)",
+      "Bash(npx *)",
+      "Bash(bunx *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git pull *)",
+      "Bash(git checkout *)",
+      "Bash(git branch *)",
+      "Bash(git status)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git stash *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(grep *)",
+      "Bash(find *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(echo *)",
+      "Bash(touch *)",
+      "Bash(chmod *)",
+      "Bash(curl *)",
+      "Bash(jq *)",
+      "Bash(gh pr *)",
+      "Bash(gh issue *)",
+      "Bash(go *)",
+      "Bash(cargo *)",
+      "Bash(rustc *)",
+      "Bash(python3 *)",
+      "Bash(python *)",
+      "Bash(pip *)",
+      "Bash(pip3 *)",
+      "Bash(bundle *)",
+      "Bash(rake *)",
+      "Bash(mvn *)",
+      "Bash(gradle *)",
+      "Bash(dotnet *)",
+      "Bash(bash *)"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(rm -rf ~)",
+      "Bash(git push --force)",
+      "Bash(git push -f)",
+      "Bash(DROP TABLE *)",
+      "Bash(truncate *)"
+    ]
+  }
+}
+SETTINGS
+echo "  settings.json installed (legacy paths)"
 
-# Copy hooks
-cp "$SCRIPT_DIR/.claude/hooks/format.sh"          "$TARGET_DIR/.claude/hooks/"
-cp "$SCRIPT_DIR/.claude/hooks/verify-on-stop.sh"  "$TARGET_DIR/.claude/hooks/"
-cp "$SCRIPT_DIR/.claude/hooks/block-dangerous.sh" "$TARGET_DIR/.claude/hooks/"
-cp "$SCRIPT_DIR/.claude/hooks/protect-files.sh"   "$TARGET_DIR/.claude/hooks/"
-cp "$SCRIPT_DIR/.claude/hooks/kova-loop.sh"       "$TARGET_DIR/.claude/hooks/"
-cp "$SCRIPT_DIR/.claude/hooks/kova-commit-gate.sh" "$TARGET_DIR/.claude/hooks/"
+# Copy hooks (from new location: hooks/)
+cp "$SCRIPT_DIR/hooks/format.sh"          "$TARGET_DIR/.claude/hooks/"
+cp "$SCRIPT_DIR/hooks/verify-on-stop.sh"  "$TARGET_DIR/.claude/hooks/"
+cp "$SCRIPT_DIR/hooks/block-dangerous.sh" "$TARGET_DIR/.claude/hooks/"
+cp "$SCRIPT_DIR/hooks/protect-files.sh"   "$TARGET_DIR/.claude/hooks/"
+cp "$SCRIPT_DIR/hooks/kova-loop.sh"       "$TARGET_DIR/.claude/hooks/"
+cp "$SCRIPT_DIR/hooks/kova-commit-gate.sh" "$TARGET_DIR/.claude/hooks/"
 
-# Copy shared library
-cp "$SCRIPT_DIR/.claude/hooks/lib/detect-stack.sh"      "$TARGET_DIR/.claude/hooks/lib/"
-cp "$SCRIPT_DIR/.claude/hooks/lib/parse-prd.sh"         "$TARGET_DIR/.claude/hooks/lib/"
-cp "$SCRIPT_DIR/.claude/hooks/lib/verify-gate.sh"       "$TARGET_DIR/.claude/hooks/lib/"
-cp "$SCRIPT_DIR/.claude/hooks/lib/parse-failures.sh"    "$TARGET_DIR/.claude/hooks/lib/"
-cp "$SCRIPT_DIR/.claude/hooks/lib/generate-prompt.sh"   "$TARGET_DIR/.claude/hooks/lib/"
-cp "$SCRIPT_DIR/.claude/hooks/lib/run-code-review.sh"   "$TARGET_DIR/.claude/hooks/lib/"
-cp "$SCRIPT_DIR/.claude/hooks/lib/rate-limiter.sh"     "$TARGET_DIR/.claude/hooks/lib/"
-cp "$SCRIPT_DIR/.claude/hooks/lib/circuit-breaker.sh"  "$TARGET_DIR/.claude/hooks/lib/"
-cp "$SCRIPT_DIR/.claude/hooks/lib/codex-assist.sh"    "$TARGET_DIR/.claude/hooks/lib/"
-cp "$SCRIPT_DIR/.claude/hooks/lib/kova-statusline.sh" "$TARGET_DIR/.claude/hooks/lib/"
+# Copy shared library (from new location: hooks/lib/)
+cp "$SCRIPT_DIR/hooks/lib/detect-stack.sh"      "$TARGET_DIR/.claude/hooks/lib/"
+cp "$SCRIPT_DIR/hooks/lib/parse-prd.sh"         "$TARGET_DIR/.claude/hooks/lib/"
+cp "$SCRIPT_DIR/hooks/lib/verify-gate.sh"       "$TARGET_DIR/.claude/hooks/lib/"
+cp "$SCRIPT_DIR/hooks/lib/parse-failures.sh"    "$TARGET_DIR/.claude/hooks/lib/"
+cp "$SCRIPT_DIR/hooks/lib/generate-prompt.sh"   "$TARGET_DIR/.claude/hooks/lib/"
+cp "$SCRIPT_DIR/hooks/lib/run-code-review.sh"   "$TARGET_DIR/.claude/hooks/lib/"
+cp "$SCRIPT_DIR/hooks/lib/rate-limiter.sh"     "$TARGET_DIR/.claude/hooks/lib/"
+cp "$SCRIPT_DIR/hooks/lib/circuit-breaker.sh"  "$TARGET_DIR/.claude/hooks/lib/"
+cp "$SCRIPT_DIR/hooks/lib/codex-assist.sh"    "$TARGET_DIR/.claude/hooks/lib/"
+cp "$SCRIPT_DIR/hooks/lib/kova-statusline.sh" "$TARGET_DIR/.claude/hooks/lib/"
 
 # Make hooks executable
 chmod +x "$TARGET_DIR/.claude/hooks/"*.sh
 chmod +x "$TARGET_DIR/.claude/hooks/lib/"*.sh
 echo "  Hooks installed and made executable"
 
-# Copy slash commands
-cp "$SCRIPT_DIR/.claude/commands/commit-push-pr.md" "$TARGET_DIR/.claude/commands/"
-cp "$SCRIPT_DIR/.claude/commands/verify-app.md"     "$TARGET_DIR/.claude/commands/"
-cp "$SCRIPT_DIR/.claude/commands/daily-standup.md"  "$TARGET_DIR/.claude/commands/"
-cp "$SCRIPT_DIR/.claude/commands/fix-and-verify.md" "$TARGET_DIR/.claude/commands/"
-cp "$SCRIPT_DIR/.claude/commands/code-review.md"    "$TARGET_DIR/.claude/commands/"
-cp "$SCRIPT_DIR/.claude/commands/plan.md"           "$TARGET_DIR/.claude/commands/"
-cp "$SCRIPT_DIR/.claude/commands/simplify.md"       "$TARGET_DIR/.claude/commands/"
+# Copy slash commands (from new location: commands/)
+cp "$SCRIPT_DIR/commands/commit-push-pr.md" "$TARGET_DIR/.claude/commands/"
+cp "$SCRIPT_DIR/commands/verify-app.md"     "$TARGET_DIR/.claude/commands/"
+cp "$SCRIPT_DIR/commands/daily-standup.md"  "$TARGET_DIR/.claude/commands/"
+cp "$SCRIPT_DIR/commands/fix-and-verify.md" "$TARGET_DIR/.claude/commands/"
+cp "$SCRIPT_DIR/commands/code-review.md"    "$TARGET_DIR/.claude/commands/"
+cp "$SCRIPT_DIR/commands/plan.md"           "$TARGET_DIR/.claude/commands/"
+cp "$SCRIPT_DIR/commands/simplify.md"       "$TARGET_DIR/.claude/commands/"
 
-# Copy kova commands (only LLM-powered ones; help/status/activate/deactivate are in the kova CLI)
-cp "$SCRIPT_DIR/.claude/commands/kova/init.md"       "$TARGET_DIR/.claude/commands/kova/"
-cp "$SCRIPT_DIR/.claude/commands/kova/loop.md"       "$TARGET_DIR/.claude/commands/kova/"
+# Copy kova commands
+cp "$SCRIPT_DIR/commands/kova/init.md"       "$TARGET_DIR/.claude/commands/kova/"
+cp "$SCRIPT_DIR/commands/kova/loop.md"       "$TARGET_DIR/.claude/commands/kova/"
 
 # Copy kova phase files (Team Loop)
-cp "$SCRIPT_DIR/.claude/commands/kova/phases/clarify.md"   "$TARGET_DIR/.claude/commands/kova/phases/"
-cp "$SCRIPT_DIR/.claude/commands/kova/phases/plan.md"      "$TARGET_DIR/.claude/commands/kova/phases/"
-cp "$SCRIPT_DIR/.claude/commands/kova/phases/implement.md" "$TARGET_DIR/.claude/commands/kova/phases/"
-cp "$SCRIPT_DIR/.claude/commands/kova/phases/verify.md"    "$TARGET_DIR/.claude/commands/kova/phases/"
-cp "$SCRIPT_DIR/.claude/commands/kova/phases/review.md"    "$TARGET_DIR/.claude/commands/kova/phases/"
-cp "$SCRIPT_DIR/.claude/commands/kova/phases/commit.md"    "$TARGET_DIR/.claude/commands/kova/phases/"
+cp "$SCRIPT_DIR/commands/kova/phases/clarify.md"   "$TARGET_DIR/.claude/commands/kova/phases/"
+cp "$SCRIPT_DIR/commands/kova/phases/plan.md"      "$TARGET_DIR/.claude/commands/kova/phases/"
+cp "$SCRIPT_DIR/commands/kova/phases/implement.md" "$TARGET_DIR/.claude/commands/kova/phases/"
+cp "$SCRIPT_DIR/commands/kova/phases/verify.md"    "$TARGET_DIR/.claude/commands/kova/phases/"
+cp "$SCRIPT_DIR/commands/kova/phases/review.md"    "$TARGET_DIR/.claude/commands/kova/phases/"
+cp "$SCRIPT_DIR/commands/kova/phases/commit.md"    "$TARGET_DIR/.claude/commands/kova/phases/"
 echo "  Slash commands installed (including kova commands + phase files)"
 
-# Copy kova CLI script
-cp "$SCRIPT_DIR/kova" "$TARGET_DIR/.claude/kova"
+# Copy kova CLI script (from new location: scripts/)
+cp "$SCRIPT_DIR/scripts/kova" "$TARGET_DIR/.claude/kova"
 chmod +x "$TARGET_DIR/.claude/kova"
 echo "  Kova CLI installed (.claude/kova)"
 
-# Copy kova-monitor script
-cp "$SCRIPT_DIR/kova-monitor" "$TARGET_DIR/.claude/kova-monitor"
+# Copy kova-monitor script (from new location: scripts/)
+cp "$SCRIPT_DIR/scripts/kova-monitor" "$TARGET_DIR/.claude/kova-monitor"
 chmod +x "$TARGET_DIR/.claude/kova-monitor"
 echo "  Kova Monitor installed (.claude/kova-monitor)"
 

@@ -42,7 +42,7 @@ Wait for their response.
 Before writing the PRD, quickly understand the project:
 
 1. Read `README.md` if it exists (for project overview)
-2. Read `.claude/CLAUDE.md` for tech stack and conventions
+2. Read `CLAUDE.md` (project root) for tech stack and conventions
 3. Check the project structure:
    ```bash
    ls -la

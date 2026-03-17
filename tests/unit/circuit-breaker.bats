@@ -8,7 +8,7 @@ setup() {
   cd "$SANDBOX"
   mkdir -p ".kova-loop"
 
-  source "$KOVA_ROOT/.claude/hooks/lib/circuit-breaker.sh"
+  source "$KOVA_ROOT/hooks/lib/circuit-breaker.sh"
 }
 
 teardown() {

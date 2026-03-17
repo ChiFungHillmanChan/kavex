@@ -8,7 +8,7 @@ setup() {
   cd "$SANDBOX"
   mkdir -p ".kova-loop"
 
-  source "$KOVA_ROOT/.claude/hooks/lib/rate-limiter.sh"
+  source "$KOVA_ROOT/hooks/lib/rate-limiter.sh"
 }
 
 teardown() {
