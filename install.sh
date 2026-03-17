@@ -3,7 +3,7 @@
 # Run this from the ROOT of any project to install the Kova protocol.
 #
 # Usage:
-#   cd /path/to/kova && bash install.sh /path/to/project
+#   cd /path/to/your/project && bash /path/to/kova/install.sh
 #   OR from project root: bash /path/to/kova/install.sh
 #   Add --dry-run to preview what would be installed without making changes
 #
@@ -119,6 +119,10 @@ if $DRY_RUN; then
   echo "  hooks/lib/circuit-breaker.sh"
   echo "  hooks/lib/codex-assist.sh"
   echo "  hooks/lib/kova-statusline.sh"
+  echo "  hooks/lib/kova-snapshot.sh"
+  echo "  hooks/lib/kova-verify.sh"
+  echo "  hooks/lib/kova-safe-commit.sh"
+  echo "  hooks/lib/kova-cleanup.sh"
   echo "  kova-monitor (CLI script → .claude/kova-monitor)"
   echo "  commands/commit-push-pr.md"
   echo "  commands/verify-app.md"
@@ -297,6 +301,10 @@ cp "$SCRIPT_DIR/hooks/lib/rate-limiter.sh"     "$TARGET_DIR/.claude/hooks/lib/"
 cp "$SCRIPT_DIR/hooks/lib/circuit-breaker.sh"  "$TARGET_DIR/.claude/hooks/lib/"
 cp "$SCRIPT_DIR/hooks/lib/codex-assist.sh"    "$TARGET_DIR/.claude/hooks/lib/"
 cp "$SCRIPT_DIR/hooks/lib/kova-statusline.sh" "$TARGET_DIR/.claude/hooks/lib/"
+cp "$SCRIPT_DIR/hooks/lib/kova-snapshot.sh"   "$TARGET_DIR/.claude/hooks/lib/"
+cp "$SCRIPT_DIR/hooks/lib/kova-verify.sh"     "$TARGET_DIR/.claude/hooks/lib/"
+cp "$SCRIPT_DIR/hooks/lib/kova-safe-commit.sh" "$TARGET_DIR/.claude/hooks/lib/"
+cp "$SCRIPT_DIR/hooks/lib/kova-cleanup.sh"    "$TARGET_DIR/.claude/hooks/lib/"
 
 # Make hooks executable
 chmod +x "$TARGET_DIR/.claude/hooks/"*.sh

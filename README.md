@@ -100,7 +100,7 @@ Choose `kova` if you want the workflow without enforcement. Choose `kova-full` i
 </p>
 
 - **Safe by default** — blocks dangerous commands (`rm -rf /`, `DROP TABLE`, force push) and protects secrets
-- **Verified before stop** — 7-layer gate (build, test, lint, typecheck, security) runs before Claude can finish
+- **Verified before stop** — fast stop gate (lint + typecheck) catches errors on every stop; full 7-layer verification runs in the Team Loop
 - **Autonomous but bounded** — retry, rate limiting, and circuit breaker prevent runaway loops
 - **Multi-model review** — Claude agents + optional OpenAI Codex cross-model review
 - **Works across stacks** — Node.js, Python, Go, Rust, Ruby, Java, .NET (auto-detected)
@@ -188,7 +188,7 @@ kova deactivate    # Turn OFF hooks
 | Feature | Description |
 |---------|-------------|
 | **Safety Hooks** | Blocks dangerous commands and protects sensitive files |
-| **7-Layer Verification** | Build, tests, lint, typecheck, security — runs automatically |
+| **Fast Stop Gate** | Lint + typecheck on every stop; full 7-layer verification in Team Loop |
 | **Auto-Format** | Formats code on every write (Prettier, Ruff, gofmt, rustfmt, etc.) |
 | **Team Loop** | Bash-orchestrated cycle per PRD item (implement → verify → review → commit) |
 | **Self-Healing** | After 3 failures, writes `DEBUG_LOG.md` and spawns a fresh session |
@@ -198,6 +198,17 @@ kova deactivate    # Turn OFF hooks
 | **tmux Dashboard** | Live monitoring via `kova-monitor` |
 | **Resumable Loops** | State saved in `.kova-loop/` — resume after interruption |
 | **Status Line** | Shows `[KOVA]`, `[KOVA LOOP]`, or `[kova off]` in Claude Code |
+
+### What Runs Where
+
+| Check | Stop hook | Team Loop | Commit gate |
+|-------|-----------|-----------|-------------|
+| Build | — | Yes | — |
+| Tests | — | Yes | — |
+| Lint | Yes | Yes | — |
+| Type check | Yes | Yes | — |
+| Security | — | Warn only | — |
+| Verification proof | — | — | Blocks without pass |
 
 See the [full guide](docs/en/README.md) for detailed explanations of each feature.
 
@@ -221,4 +232,20 @@ CI runs on both Linux and macOS for every PR. See [CONTRIBUTING.md](CONTRIBUTING
 
 > "You don't trust; you instrument."
 
-The goal isn't to hope Claude does the right thing. It's to build a system where Claude **can only do the right thing.** As AI models get stronger, your system gets stronger automatically.
+The goal isn't to hope Claude does the right thing. It's to build a system where **hooks make the wrong thing hard.** As AI models get stronger, your system gets stronger automatically.
+
+---
+
+## Current Guarantees and Limits
+
+**What hooks guarantee (when active):**
+- Every stop triggers lint + typecheck (fast stop gate)
+- Every file write is checked against the protected files list
+- Every bash command is checked against the dangerous commands list
+- The Team Loop runs full 7-layer verification via bash instead of relying on prompt compliance
+
+**What hooks do NOT guarantee:**
+- Hooks can be disabled by the user (`kova deactivate` or editing settings.json)
+- The stop gate runs lint + typecheck only — build, tests, and security run in the Team Loop
+- File protection uses pattern matching, not OS-level permissions
+- Hooks require `jq` to be installed; without it, they exit silently

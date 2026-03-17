@@ -65,4 +65,8 @@ installed_lib_files() {
   echo "circuit-breaker.sh"
   echo "codex-assist.sh"
   echo "kova-statusline.sh"
+  echo "kova-snapshot.sh"
+  echo "kova-verify.sh"
+  echo "kova-safe-commit.sh"
+  echo "kova-cleanup.sh"
 }

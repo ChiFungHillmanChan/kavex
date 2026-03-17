@@ -14,7 +14,7 @@
 - [Installation](#installation)
 - [The 4 Hooks (Automatic)](#the-4-hooks-automatic)
   - [Hook 1: auto-format](#hook-1-formatsh--auto-format)
-  - [Hook 2: verify-on-stop (7-Layer Gate)](#hook-2-verify-on-stopsh--7-layer-gate)
+  - [Hook 2: verify-on-stop (Fast Stop Gate)](#hook-2-verify-on-stopsh--fast-stop-gate)
   - [Hook 3: block-dangerous](#hook-3-block-dangeroussh--block-dangerous-commands)
   - [Hook 4: protect-files](#hook-4-protect-filessh--protect-sensitive-files)
 - [CLAUDE.md — The Culture Document](#claudemd--the-culture-document)
@@ -62,11 +62,12 @@ No cloning, no scripts. Everything is available immediately after install.
 ### Option B: Legacy Install (clone + install.sh)
 
 ```bash
-# From the kova directory:
-bash install.sh
+# From your project directory:
+cd /path/to/your/project
+bash /path/to/kova/install.sh
 
 # Preview without installing:
-bash install.sh --dry-run
+bash /path/to/kova/install.sh --dry-run
 ```
 
 What the installer does:
@@ -110,38 +111,11 @@ It auto-detects your language and runs the right formatter:
 
 ---
 
-### Hook 2: `verify-on-stop.sh` — 7-Layer Gate
+### Hook 2: `verify-on-stop.sh` — Fast Stop Gate
 
 **When does it run?** Every time Claude says "I'm done" and tries to stop.
 
-**What does it do?** Runs 7 layers of checks. The first 6 are **blocking** — if any fail, Claude **cannot stop** and must keep fixing. Layer 7 is a warning only.
-
-Layer by layer:
-
-**Layer 1: Build**
-- Your project must compile successfully.
-- Node.js → `npm run build`
-- Go → `go build ./...`
-- Rust → `cargo build`
-- Java → `mvn compile`
-- .NET → `dotnet build`
-- If build fails → **blocked, Claude cannot stop**
-
-**Layer 2: Unit Tests**
-- Runs all your unit tests.
-- Auto-detects test framework: vitest, jest, pytest, go test, cargo test, rspec, mvn test, etc.
-- **Flaky test handling:** If a test fails, it automatically retries once. If the retry passes, it counts as a pass (because some tests are intermittently flaky).
-- If retry also fails → **blocked**
-
-**Layer 3: Integration Tests**
-- Only runs if your project has a `test:integration` script configured.
-- If not configured → automatically skipped.
-- If configured → same retry-on-fail behavior as unit tests.
-
-**Layer 4: E2E Tests**
-- Only runs if Playwright is installed.
-- No Playwright → automatically skipped.
-- If installed → runs `npx playwright test`.
+**What does it do?** Runs a fast check: **lint + typecheck only** (layers 5-6). If either fails, Claude **is blocked from stopping** and must keep fixing. This keeps stop-time fast while catching the most common issues.
 
 **Layer 5: Lint**
 - Checks code against style rules.
@@ -155,13 +129,21 @@ Layer by layer:
 - Rust → `cargo check`
 - Type errors → **blocked**
 
-**Layer 7: Security Audit — warning only**
-- `npm audit`, `pip-audit`, `cargo audit`, etc.
-- Issues are displayed as warnings but **do not block**.
-
-**In plain English:** Claude finishes work, tries to stop, but must pass 6 gates first. If any gate fails, Claude fixes the issue and tries again. Automatically.
+**In plain English:** Claude finishes work, tries to stop, but must pass lint and typecheck first. If either fails, Claude fixes the issue and tries again. Automatically.
 
 **If it fails 3 times:** A `DEBUG_LOG.md` is written with diagnosis, and a fresh Claude session is auto-spawned to attempt the fix (self-healing). If the fresh session also fails, it finally stops for human review.
+
+#### Full 7-Layer Verification (Team Loop)
+
+The complete 7-layer verification runs in the **Team Loop** (`/kova:loop`) via `verify-gate.sh`, not on every stop. This includes:
+
+1. **Build** — compile your project (npm run build, go build, cargo build, etc.)
+2. **Unit Tests** — run all unit tests with flaky retry (auto-retry once on failure)
+3. **Integration Tests** — only if `test:integration` script is configured
+4. **E2E Tests** — only if Playwright is installed
+5. **Lint** — same as stop gate
+6. **Type Check** — same as stop gate
+7. **Security Audit** — warning only, does not block
 
 ---
 
@@ -190,10 +172,16 @@ Blocked commands include:
 **What does it do?** Blocks modifications to sensitive files.
 
 Protected files include:
-- `.env`, `.env.production`, `.env.local` — environment variables (usually contain API keys)
+
+**Env files** (basename exact match — `some.environment.ts` is NOT blocked):
+- `.env`, `.env.local`, `.env.development`, `.env.test`, `.env.staging`, `.env.production`, `.env.prod`
+
+**Sensitive paths** (substring match on full path):
 - `.pem`, `.key` — encryption keys
+- `id_rsa` — SSH private keys
 - `secrets/` directory
 - `credentials/` directory
+- `serviceAccountKey.json`, `firebase-adminsdk` — cloud service credentials
 
 **In plain English:** Claude will not accidentally edit your passwords or API keys.
 
@@ -616,4 +604,24 @@ Auto-detection is based on lockfiles and config files (package.json, go.mod, Car
 
 **Kova's philosophy:** *"You don't trust; you instrument."*
 
-The goal isn't to hope Claude does the right thing. It's to build a system where Claude **can only do the right thing.**
+The goal isn't to hope Claude does the right thing. It's to build a system where **hooks make the wrong thing hard.**
+
+---
+
+## Current Guarantees and Limits
+
+Kova's safety hooks are enforced by the Claude Code hook system. Here's what that means in practice:
+
+**What hooks guarantee (when active):**
+- Every stop triggers lint + typecheck (fast stop gate)
+- Every file write is checked against the protected files list
+- Every bash command is checked against the dangerous commands list
+- The Team Loop runs full 7-layer verification via bash — Claude cannot skip it
+
+**What hooks do NOT guarantee:**
+- Hooks can be disabled by the user (`kova deactivate` or editing settings.json)
+- The stop gate runs lint + typecheck only — build, tests, and security run in the Team Loop
+- File protection uses pattern matching, not OS-level permissions — unusual filenames could bypass it
+- Hooks require `jq` to be installed; without it, they exit silently
+
+**In short:** Kova makes the wrong thing hard, not impossible. It's an engineering discipline system, not a security sandbox.

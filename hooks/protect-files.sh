@@ -1,6 +1,12 @@
 #!/bin/bash
 # protect-files.sh — Block writes to sensitive files
 # Runs on PreToolUse for Write|Edit|MultiEdit
+#
+# Two matching strategies:
+#   - PROTECTED_BASENAME: exact match on filename (basename) — prevents false positives
+#     like "some.environment.ts" matching ".env"
+#   - PROTECTED_SUBSTRING: substring match on full path — for patterns that can appear
+#     anywhere in a file path
 
 INPUT=$(cat)
 FILE=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty' 2>/dev/null)
@@ -9,10 +15,21 @@ if [ -z "$FILE" ]; then
   exit 0
 fi
 
-# Files/patterns that should never be auto-edited
-PROTECTED=(
+BASENAME=$(basename "$FILE")
+
+# Env files — exact match on basename to avoid false positives
+PROTECTED_BASENAME=(
+  ".env"
+  ".env.local"
+  ".env.development"
+  ".env.test"
+  ".env.staging"
   ".env.production"
   ".env.prod"
+)
+
+# Sensitive paths/extensions — substring match on full path
+PROTECTED_SUBSTRING=(
   "secrets/"
   "credentials/"
   ".pem"
@@ -22,7 +39,17 @@ PROTECTED=(
   "firebase-adminsdk"
 )
 
-for pattern in "${PROTECTED[@]}"; do
+# Basename exact match (env files)
+for pattern in "${PROTECTED_BASENAME[@]}"; do
+  if [[ "$BASENAME" == "$pattern" ]]; then
+    echo "BLOCKED: Protected file pattern matched: $pattern" >&2
+    echo "{\"decision\":\"block\",\"reason\":\"File '$FILE' matches protected pattern '$pattern'. This file contains sensitive data. Ask the human before editing.\"}"
+    exit 0
+  fi
+done
+
+# Substring match (secrets, keys, credentials)
+for pattern in "${PROTECTED_SUBSTRING[@]}"; do
   if [[ "$FILE" == *"$pattern"* ]]; then
     echo "BLOCKED: Protected file pattern matched: $pattern" >&2
     echo "{\"decision\":\"block\",\"reason\":\"File '$FILE' matches protected pattern '$pattern'. This file contains sensitive data. Ask the human before editing.\"}"

@@ -19,6 +19,10 @@ source "$LIB_DIR/run-code-review.sh"
 source "$LIB_DIR/rate-limiter.sh"
 source "$LIB_DIR/circuit-breaker.sh"
 source "$LIB_DIR/codex-assist.sh"
+source "$LIB_DIR/kova-snapshot.sh"
+source "$LIB_DIR/kova-verify.sh"
+source "$LIB_DIR/kova-safe-commit.sh"
+source "$LIB_DIR/kova-cleanup.sh"
 
 PRD_FILE=""
 MAX_ITERATIONS=20
@@ -103,77 +107,12 @@ run_claude_with_prompt() {
   return $?
 }
 
-# Snapshot the working tree state before Claude runs an iteration.
-# Call this BEFORE run_claude_with_prompt to capture the baseline.
-# Saves: tracked file mtimes + list of untracked files.
-snapshot_pre_iteration() {
-  # List of tracked files with their status (M/D/A/etc)
-  git diff --name-only HEAD 2>/dev/null | sort > "$STATE_DIR/.pre-tracked"
-  # List of all untracked files (excluding .gitignore'd)
-  git ls-files --others --exclude-standard 2>/dev/null | sort > "$STATE_DIR/.pre-untracked"
-  : > "$STATE_DIR/.pre-tracked-hashes"
-
-  local tracked_file
-  while IFS= read -r tracked_file; do
-    [ -z "$tracked_file" ] && continue
-    printf '%s\t%s\n' "$tracked_file" "$(working_tree_hash "$tracked_file")" >> "$STATE_DIR/.pre-tracked-hashes"
-  done < "$STATE_DIR/.pre-tracked"
-}
-
-# Hash the current working-tree contents for a tracked path so we can tell
-# whether a file that was already dirty changed again during this iteration.
-working_tree_hash() {
-  local path="$1"
-  if [ -e "$path" ]; then
-    git hash-object --no-filters -- "$path" 2>/dev/null || echo "__HASH_ERROR__"
-  else
-    echo "__MISSING__"
-  fi
-}
-
-# Stage only files that changed SINCE the pre-iteration snapshot.
-# This ensures only files Claude touched get committed — pre-existing
-# dirty work in the working tree is left alone.
-stage_item_changes() {
-  # Current state
-  git diff --name-only HEAD 2>/dev/null | sort > "$STATE_DIR/.post-tracked"
-  git ls-files --others --exclude-standard 2>/dev/null | sort > "$STATE_DIR/.post-untracked"
-
-  # Newly modified tracked files = in post but not pre (or changed since)
-  local changed_file
-  # Stage tracked files that are new or changed since snapshot
-  comm -13 "$STATE_DIR/.pre-tracked" "$STATE_DIR/.post-tracked" 2>/dev/null | while IFS= read -r changed_file; do
-    [ -n "$changed_file" ] && git add -- "$changed_file" 2>/dev/null || true
-  done
-  # Stage tracked files that were already dirty only if their contents changed
-  # after the snapshot. This keeps unrelated pre-existing edits out of the commit.
-  comm -12 "$STATE_DIR/.pre-tracked" "$STATE_DIR/.post-tracked" 2>/dev/null | while IFS= read -r changed_file; do
-    [ -z "$changed_file" ] && continue
-
-    local pre_hash post_hash
-    pre_hash=$(awk -F '\t' -v target="$changed_file" '$1 == target { print $2; exit }' "$STATE_DIR/.pre-tracked-hashes")
-    post_hash=$(working_tree_hash "$changed_file")
-
-    if [ -n "$pre_hash" ] && [ "$pre_hash" != "$post_hash" ]; then
-      git add -- "$changed_file" 2>/dev/null || true
-    fi
-  done
-
-  # Stage only NEW untracked files (not present before Claude ran)
-  comm -13 "$STATE_DIR/.pre-untracked" "$STATE_DIR/.post-untracked" 2>/dev/null | while IFS= read -r changed_file; do
-    [ -z "$changed_file" ] && continue
-    # Skip sensitive files
-    case "$changed_file" in
-      *.env|*.env.*|*.pem|*.key|*.p12|*.pfx|*.jks) continue ;;
-      secrets/*|credentials/*|.secrets/*|.credentials/*) continue ;;
-      *) git add -- "$changed_file" 2>/dev/null || true ;;
-    esac
-  done
-
-  # Safety net: unstage any sensitive files
-  git reset HEAD -- '*.env' '*.env.*' '*.pem' '*.key' '*.p12' '*.pfx' '*.jks' \
-    'secrets/' 'credentials/' '.secrets/' '.credentials/' >/dev/null 2>&1 || true
-}
+# snapshot_pre_iteration / working_tree_hash / stage_item_changes are now
+# provided by kova-snapshot.sh and kova-safe-commit.sh (sourced above).
+# Legacy wrappers for backward compatibility within this script:
+snapshot_pre_iteration() { kova_snapshot "$STATE_DIR"; }
+working_tree_hash() { git hash-object --no-filters -- "$1" 2>/dev/null || echo "__MISSING__"; }
+stage_item_changes() { _kova_stage_changes "$STATE_DIR"; }
 
 commit_item() {
   local item_num="$1" item_text="$2"

@@ -1,7 +1,7 @@
 #!/bin/bash
-# verify-on-stop.sh — Multi-layer verification gate when Claude finishes a task
-# Pipeline: Build -> Unit -> Integration -> E2E -> Lint -> Types -> Security (warn only)
-# Test layers (2-4) use run_and_retry for flaky test detection
+# verify-on-stop.sh — Fast stop gate when Claude finishes a task
+# Fast mode: runs lint + typecheck only (layers 5-6)
+# Full 7-layer verification (build, tests, lint, types, security) runs in the Team Loop via verify-gate.sh
 # Max 3 retries before writing DEBUG_LOG.md and spawning self-healing session
 
 _HOOK_DIR="$(dirname "$0")"
