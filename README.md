@@ -1,13 +1,21 @@
 # Kova
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Shell](https://img.shields.io/badge/Shell-Bash-green.svg)](https://www.gnu.org/software/bash/)
-[![Claude Code](https://img.shields.io/badge/Claude_Code-Compatible-blueviolet.svg)](https://docs.anthropic.com/en/docs/claude-code)
-[![Tests](https://img.shields.io/badge/Tests-213%20passing-brightgreen.svg)](#testing)
-[![Plugin](https://img.shields.io/badge/Claude_Code-Plugin-blueviolet.svg)](https://docs.anthropic.com/en/docs/claude-code)
-[![Languages](https://img.shields.io/badge/Docs-EN%20%7C%20%E7%B2%B5%E8%AA%9E%20%7C%20%E4%B8%AD%E6%96%87-orange.svg)](#documentation)
+<p align="center">
+  <img src="assets/kova-hero.png" alt="Kova — Autonomous Engineering Protocol" width="100%" />
+</p>
 
-> Autonomous engineering protocol for Claude Code: safe by default, verified before stop, and built to ship.
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+  <a href="https://www.gnu.org/software/bash/"><img src="https://img.shields.io/badge/Shell-Bash-green.svg" alt="Shell"></a>
+  <a href="https://docs.anthropic.com/en/docs/claude-code"><img src="https://img.shields.io/badge/Claude_Code-Compatible-blueviolet.svg" alt="Claude Code"></a>
+  <a href="#testing"><img src="https://img.shields.io/badge/Tests-213%20passing-brightgreen.svg" alt="Tests"></a>
+  <a href="https://docs.anthropic.com/en/docs/claude-code"><img src="https://img.shields.io/badge/Claude_Code-Plugin-blueviolet.svg" alt="Plugin"></a>
+  <a href="#documentation"><img src="https://img.shields.io/badge/Docs-EN%20%7C%20%E7%B2%B5%E8%AA%9E%20%7C%20%E4%B8%AD%E6%96%87-orange.svg" alt="Languages"></a>
+</p>
+
+<p align="center">
+  <strong>Autonomous engineering protocol for Claude Code: safe by default, verified before stop, and built to ship.</strong>
+</p>
 
 **Kova** drops into any project and turns Claude Code from "assistant that asks" into "engineering system that executes, verifies, and self-corrects."
 
@@ -87,6 +95,10 @@ Choose `kova` if you want the workflow without enforcement. Choose `kova-full` i
 
 ## Why Kova
 
+<p align="center">
+  <img src="assets/kova-comparison.png" alt="Without Kova vs With Kova" width="100%" />
+</p>
+
 - **Safe by default** — blocks dangerous commands (`rm -rf /`, `DROP TABLE`, force push) and protects secrets
 - **Verified before stop** — 7-layer gate (build, test, lint, typecheck, security) runs before Claude can finish
 - **Autonomous but bounded** — retry, rate limiting, and circuit breaker prevent runaway loops
@@ -96,6 +108,10 @@ Choose `kova` if you want the workflow without enforcement. Choose `kova-full` i
 ---
 
 ## How It Works
+
+<p align="center">
+  <img src="assets/kova-workflow.png" alt="Kova Team Loop — 6-Phase Workflow" width="100%" />
+</p>
 
 The Team Loop (`/kova:loop`) is **bash-orchestrated** — Claude is the worker, bash is the boss:
 
@@ -164,6 +180,10 @@ kova deactivate    # Turn OFF hooks
 ---
 
 ## Core Features
+
+<p align="center">
+  <img src="assets/kova-safety.png" alt="Kova 7-Layer Verification Architecture" width="100%" />
+</p>
 
 | Feature | Description |
 |---------|-------------|

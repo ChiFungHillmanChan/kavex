@@ -1,5 +1,9 @@
 # Kova 协议 — 完整指南
 
+<p align="center">
+  <img src="../../assets/kova-hero.png" alt="Kova — 自主工程协议" width="100%" />
+</p>
+
 > 安装到**任何项目**中，将 Claude Code 从"你问它答的 AI"变成"自动开发、自动测试、自动修复的工程团队"。
 
 ---
@@ -80,6 +84,10 @@ bash install.sh --dry-run
 ---
 
 ## 四个 Hooks（自动触发）
+
+<p align="center">
+  <img src="../../assets/kova-safety.png" alt="Kova 7 层验证架构" width="100%" />
+</p>
 
 Hooks 是"自动运行的脚本"。你不需要输入任何命令，它们会在特定时刻自动执行。
 
@@ -297,6 +305,10 @@ Claude 会同时开 4 个独立的 reviewer：
 ---
 
 ## Team Loop — 王牌功能
+
+<p align="center">
+  <img src="../../assets/kova-workflow.png" alt="Kova Team Loop — 6 阶段工作流程" width="100%" />
+</p>
 
 这是 Kova 最强大的功能。你写一个 PRD（Product Requirements Document，就是一个待办清单），然后输入：
 
@@ -597,6 +609,10 @@ codex login
 ---
 
 ## 总结
+
+<p align="center">
+  <img src="../../assets/kova-comparison.png" alt="没有 Kova vs 有 Kova" width="100%" />
+</p>
 
 | 方面 | 没有 Kova | 有 Kova |
 |------|-----------|---------|

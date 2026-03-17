@@ -1,5 +1,9 @@
 # Kova 協議 — 完整指南
 
+<p align="center">
+  <img src="../../assets/kova-hero.png" alt="Kova — 自主工程協議" width="100%" />
+</p>
+
 > 裝落去**任何 project**，將 Claude Code 由「你問佢答嘅 AI」變成「自動做嘢、自動測試、自動改錯嘅工程團隊」。
 
 ---
@@ -80,6 +84,10 @@ bash install.sh --dry-run
 ---
 
 ## 四個 Hooks（自動觸發）
+
+<p align="center">
+  <img src="../../assets/kova-safety.png" alt="Kova 7 層驗證架構" width="100%" />
+</p>
 
 Hooks 係「自動跑嘅腳本」。你唔使打任何指令，佢哋會喺特定時刻自動執行。
 
@@ -297,6 +305,10 @@ Claude 會同時開 4 個獨立嘅 reviewer：
 ---
 
 ## Team Loop — 皇牌功能
+
+<p align="center">
+  <img src="../../assets/kova-workflow.png" alt="Kova Team Loop — 6 階段工作流程" width="100%" />
+</p>
 
 呢個係 Kova 最強嘅嘢。你寫一個 PRD（Product Requirements Document，即係一個 to-do list），然後打：
 
@@ -597,6 +609,10 @@ codex login
 ---
 
 ## 總結
+
+<p align="center">
+  <img src="../../assets/kova-comparison.png" alt="冇 Kova vs 有 Kova" width="100%" />
+</p>
 
 | 層面 | 冇 Kova | 有 Kova |
 |------|---------|---------|

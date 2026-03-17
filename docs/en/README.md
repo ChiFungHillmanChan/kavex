@@ -1,5 +1,9 @@
 # Kova Protocol — Full Guide
 
+<p align="center">
+  <img src="../../assets/kova-hero.png" alt="Kova — Autonomous Engineering Protocol" width="100%" />
+</p>
+
 > Drop into **any project** to transform Claude Code from "AI that asks questions" into "autonomous engineering team that ships."
 
 ---
@@ -80,6 +84,10 @@ What the installer does:
 ---
 
 ## The 4 Hooks (Automatic)
+
+<p align="center">
+  <img src="../../assets/kova-safety.png" alt="Kova 7-Layer Verification Architecture" width="100%" />
+</p>
 
 Hooks are scripts that run automatically. You never type anything — they trigger at specific moments during Claude's work.
 
@@ -295,6 +303,10 @@ Shows: what was done today, blockers, next steps, velocity.
 ---
 
 ## Team Loop — The Crown Jewel
+
+<p align="center">
+  <img src="../../assets/kova-workflow.png" alt="Kova Team Loop — 6-Phase Workflow" width="100%" />
+</p>
 
 This is Kova's most powerful feature. You write a PRD (Product Requirements Document — basically a to-do list), then run:
 
@@ -587,6 +599,10 @@ Auto-detection is based on lockfiles and config files (package.json, go.mod, Car
 ---
 
 ## Summary
+
+<p align="center">
+  <img src="../../assets/kova-comparison.png" alt="Without Kova vs With Kova" width="100%" />
+</p>
 
 | Aspect | Without Kova | With Kova |
 |--------|-------------|-----------|
