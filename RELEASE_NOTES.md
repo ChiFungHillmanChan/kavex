@@ -20,7 +20,7 @@ Kova v0.3.0 introduces plugin distribution, cross-model diagnostics, and repo re
 
 ### Testing
 
-- Full Bats suite passing: **213 / 213**.
+- Full Bats suite passing: **all tests green** (count auto-updated by CI badge).
 - New tests shipped: codex-assist, kova-statusline, verify-on-stop self-heal, hook-name consistency regression.
 
 ### Upgrade Notes
