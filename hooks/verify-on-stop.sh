@@ -36,8 +36,25 @@ fi
 # --- Retry counter (max 3 attempts) ---
 PROJ_HASH=$(project_hash "$CLAUDE_PROJECT_DIR")
 KOVA_TMP="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/kova-$PROJ_HASH"
-mkdir -p "$KOVA_TMP" 2>/dev/null
-chmod 700 "$KOVA_TMP" 2>/dev/null
+if [ -d "$KOVA_TMP" ]; then
+  # Ownership check: detect symlink attacks by verifying we own the directory
+  if [ ! -O "$KOVA_TMP" ]; then
+    echo "STOP GATE: Temp directory ownership mismatch — possible symlink attack. Blocking." >&2
+    exit 1
+  fi
+else
+  # Create atomically via mktemp, then move to deterministic path
+  _kova_mktemp=$(mktemp -d 2>/dev/null) || { echo "STOP GATE: Failed to create temp directory." >&2; exit 1; }
+  chmod 700 "$_kova_mktemp"
+  if ! mv "$_kova_mktemp" "$KOVA_TMP" 2>/dev/null; then
+    # Race: another process created it first — verify ownership
+    rm -rf "$_kova_mktemp"
+    if [ ! -O "$KOVA_TMP" ]; then
+      echo "STOP GATE: Temp directory ownership mismatch — possible symlink attack. Blocking." >&2
+      exit 1
+    fi
+  fi
+fi
 COUNTER_FILE="$KOVA_TMP/verify-stop-counter"
 HISTORY_FILE="$KOVA_TMP/verify-stop-history"
 ATTEMPT=$(cat "$COUNTER_FILE" 2>/dev/null || echo "0")

@@ -18,7 +18,10 @@ if ! require_jq; then
 fi
 
 INPUT=$(cat)
-FILE=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty' 2>/dev/null || true)
+if ! FILE=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty' 2>/dev/null); then
+  echo '{"decision":"block","reason":"KOVA: Failed to parse hook input. Blocking for safety."}'
+  exit 0
+fi
 
 if [ -z "$FILE" ]; then
   exit 0

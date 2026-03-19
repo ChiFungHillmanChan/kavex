@@ -14,5 +14,12 @@
     "code-review",
     "workflow",
     "autonomous"
-  ]
+  ],
+  "categories": [
+    "workflow",
+    "engineering"
+  ],
+  "requirements": {
+    "jq": "optional"
+  }
 }

@@ -12,7 +12,10 @@ if ! require_jq; then
 fi
 
 INPUT=$(cat)
-CMD=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null || true)
+if ! CMD=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null); then
+  echo '{"decision":"block","reason":"KOVA: Failed to parse hook input. Blocking for safety."}'
+  exit 0
+fi
 
 if [ -z "$CMD" ]; then
   exit 0

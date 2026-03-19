@@ -257,4 +257,4 @@ The goal isn't to hope Claude does the right thing. It's to build a system where
 - Hooks can be disabled by the user (`kova deactivate` or editing settings.json)
 - The stop gate runs lint + typecheck only — build, tests, and security run in the Team Loop
 - File protection uses pattern matching, not OS-level permissions
-- Hooks require `jq` to be installed; without it, they exit silently
+- Hooks require `jq` to be installed; without it, hooks **block** operations (fail-closed) for safety
