@@ -1,10 +1,10 @@
-# Contributing to Kova
+# Contributing to Kavex
 
-Welcome! Kova makes Claude Code work better for every language and ecosystem. Contributions are appreciated — whether it's adding a new language, improving hooks, or fixing bugs.
+Welcome! Kavex makes Claude Code work better for every language and ecosystem. Contributions are appreciated — whether it's adding a new language, improving hooks, or fixing bugs.
 
 ## Running Tests Locally
 
-Kova uses [Bats](https://github.com/bats-core/bats-core) for shell testing. **All tests must pass before submitting a PR.**
+Kavex uses [Bats](https://github.com/bats-core/bats-core) for shell testing. **All tests must pass before submitting a PR.**
 
 ```bash
 # Install test dependencies (one time)
@@ -44,7 +44,7 @@ Hooks are shell scripts in `hooks/` that run automatically based on tool matcher
 1. Create a new `.sh` file in `hooks/`
 2. Register it in `hooks/hooks.json` (plugin mode) or `.claude/settings.json` (legacy mode) under the `hooks` key with a `matcher` (tool trigger) and `command` (path to script)
 3. Add the hook to the install payload in `install.sh`
-4. Update `kova` CLI (`cmd_help`, `cmd_status`, `cmd_activate`) to reference the new hook
+4. Update `kavex` CLI (`cmd_help`, `cmd_status`, `cmd_activate`) to reference the new hook
 5. Run `npm run test:regression` to verify hook-name consistency
 6. Hooks receive context via environment variables and stdin — see existing hooks for examples
 7. Keep hooks fast; they run on every matched action

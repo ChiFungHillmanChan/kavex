@@ -15,7 +15,7 @@ teardown() {
 # --- install.sh --dry-run ---
 
 @test "install --dry-run: prints plan without creating files" {
-  run bash -c "cd '$SANDBOX' && bash '$KOVA_ROOT/install.sh' --dry-run"
+  run bash -c "cd '$SANDBOX' && bash '$KAVEX_ROOT/install.sh' --dry-run"
   assert_success
   assert_output --partial "DRY RUN"
   assert_output --partial "hooks/format.sh"
@@ -25,16 +25,16 @@ teardown() {
 }
 
 @test "install --dry-run: mentions CLAUDE.md when none exists" {
-  run bash -c "cd '$SANDBOX' && bash '$KOVA_ROOT/install.sh' --dry-run"
+  run bash -c "cd '$SANDBOX' && bash '$KAVEX_ROOT/install.sh' --dry-run"
   assert_success
   assert_output --partial "CLAUDE.md"
 }
 
 @test "install --dry-run: notes existing CLAUDE.md preservation" {
   echo "# My rules" > "$SANDBOX/CLAUDE.md"
-  run bash -c "cd '$SANDBOX' && bash '$KOVA_ROOT/install.sh' --dry-run"
+  run bash -c "cd '$SANDBOX' && bash '$KAVEX_ROOT/install.sh' --dry-run"
   assert_success
-  assert_output --partial "CLAUDE.kova.md"
+  assert_output --partial "CLAUDE.kavex.md"
 }
 
 # --- install.sh (full) ---
@@ -44,7 +44,7 @@ teardown() {
   [ -d "$SANDBOX/.claude/hooks" ]
   [ -d "$SANDBOX/.claude/hooks/lib" ]
   [ -d "$SANDBOX/.claude/commands" ]
-  [ -d "$SANDBOX/.claude/commands/kova/phases" ]
+  [ -d "$SANDBOX/.claude/commands/kavex/phases" ]
 }
 
 @test "install: copies all hook scripts" {
@@ -53,7 +53,7 @@ teardown() {
   [ -f "$SANDBOX/.claude/hooks/verify-on-stop.sh" ]
   [ -f "$SANDBOX/.claude/hooks/block-dangerous.sh" ]
   [ -f "$SANDBOX/.claude/hooks/protect-files.sh" ]
-  [ -f "$SANDBOX/.claude/hooks/kova-loop.sh" ]
+  [ -f "$SANDBOX/.claude/hooks/kavex-loop.sh" ]
 }
 
 @test "install: copies all lib scripts" {
@@ -72,7 +72,7 @@ teardown() {
   [ -x "$SANDBOX/.claude/hooks/verify-on-stop.sh" ]
   [ -x "$SANDBOX/.claude/hooks/block-dangerous.sh" ]
   [ -x "$SANDBOX/.claude/hooks/protect-files.sh" ]
-  [ -x "$SANDBOX/.claude/hooks/kova-loop.sh" ]
+  [ -x "$SANDBOX/.claude/hooks/kavex-loop.sh" ]
 }
 
 @test "install: lib scripts are executable" {
@@ -111,22 +111,22 @@ teardown() {
   [ -f "$SANDBOX/.claude/commands/daily-standup.md" ]
 }
 
-@test "install: copies kova commands and phases" {
+@test "install: copies kavex commands and phases" {
   run_install "$SANDBOX"
-  [ -f "$SANDBOX/.claude/commands/kova/init.md" ]
-  [ -f "$SANDBOX/.claude/commands/kova/loop.md" ]
-  [ -f "$SANDBOX/.claude/commands/kova/phases/clarify.md" ]
-  [ -f "$SANDBOX/.claude/commands/kova/phases/plan.md" ]
-  [ -f "$SANDBOX/.claude/commands/kova/phases/implement.md" ]
-  [ -f "$SANDBOX/.claude/commands/kova/phases/verify.md" ]
-  [ -f "$SANDBOX/.claude/commands/kova/phases/review.md" ]
-  [ -f "$SANDBOX/.claude/commands/kova/phases/commit.md" ]
+  [ -f "$SANDBOX/.claude/commands/kavex/init.md" ]
+  [ -f "$SANDBOX/.claude/commands/kavex/loop.md" ]
+  [ -f "$SANDBOX/.claude/commands/kavex/phases/clarify.md" ]
+  [ -f "$SANDBOX/.claude/commands/kavex/phases/plan.md" ]
+  [ -f "$SANDBOX/.claude/commands/kavex/phases/implement.md" ]
+  [ -f "$SANDBOX/.claude/commands/kavex/phases/verify.md" ]
+  [ -f "$SANDBOX/.claude/commands/kavex/phases/review.md" ]
+  [ -f "$SANDBOX/.claude/commands/kavex/phases/commit.md" ]
 }
 
-@test "install: copies kova CLI script and makes it executable" {
+@test "install: copies kavex CLI script and makes it executable" {
   run_install "$SANDBOX"
-  [ -f "$SANDBOX/.claude/kova" ]
-  [ -x "$SANDBOX/.claude/kova" ]
+  [ -f "$SANDBOX/.claude/kavex" ]
+  [ -x "$SANDBOX/.claude/kavex" ]
 }
 
 @test "install: creates CLAUDE.md when none exists" {
@@ -136,12 +136,12 @@ teardown() {
   assert_output --partial "senior software engineer"
 }
 
-@test "install: preserves existing CLAUDE.md and writes .kova.md" {
+@test "install: preserves existing CLAUDE.md and writes .kavex.md" {
   echo "# My custom rules" > "$SANDBOX/CLAUDE.md"
   run_install "$SANDBOX"
   run cat "$SANDBOX/CLAUDE.md"
   assert_output "# My custom rules"
-  [ -f "$SANDBOX/CLAUDE.kova.md" ]
+  [ -f "$SANDBOX/CLAUDE.kavex.md" ]
 }
 
 @test "install: idempotent — second install succeeds" {

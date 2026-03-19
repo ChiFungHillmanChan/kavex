@@ -11,7 +11,7 @@
           },
           {
             "type": "command",
-            "command": "cat | \"${CLAUDE_PLUGIN_ROOT}/hooks/kova-commit-gate.sh\"",
+            "command": "cat | \"${CLAUDE_PLUGIN_ROOT}/hooks/kavex-commit-gate.sh\"",
             "timeout": 5
           }
         ]

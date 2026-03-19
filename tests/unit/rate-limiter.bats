@@ -6,9 +6,9 @@ setup() {
 
   SANDBOX="$(mktemp -d)"
   cd "$SANDBOX"
-  mkdir -p ".kova-loop"
+  mkdir -p ".kavex-loop"
 
-  source "$KOVA_ROOT/hooks/lib/rate-limiter.sh"
+  source "$KAVEX_ROOT/hooks/lib/rate-limiter.sh"
 }
 
 teardown() {
@@ -18,21 +18,21 @@ teardown() {
 # --- rate_limit_init ---
 
 @test "rate_limit_init: creates state file" {
-  rate_limit_init ".kova-loop"
-  [ -f ".kova-loop/.rate_limit_state" ]
+  rate_limit_init ".kavex-loop"
+  [ -f ".kavex-loop/.rate_limit_state" ]
 }
 
 @test "rate_limit_init: preserves existing state file" {
-  echo "1700000000" > ".kova-loop/.rate_limit_state"
-  rate_limit_init ".kova-loop"
-  run cat ".kova-loop/.rate_limit_state"
+  echo "1700000000" > ".kavex-loop/.rate_limit_state"
+  rate_limit_init ".kavex-loop"
+  run cat ".kavex-loop/.rate_limit_state"
   assert_output "1700000000"
 }
 
 # --- rate_limit_check ---
 
 @test "rate_limit_check: returns 0 when under limit" {
-  rate_limit_init ".kova-loop"
+  rate_limit_init ".kavex-loop"
   run rate_limit_check
   assert_success
 }
@@ -44,13 +44,13 @@ teardown() {
 }
 
 @test "rate_limit_check: returns 1 when at limit" {
-  rate_limit_init ".kova-loop"
+  rate_limit_init ".kavex-loop"
   local now
   now=$(date +%s)
   # Write MAX_INVOCATIONS_PER_HOUR timestamps within the last hour
   export MAX_INVOCATIONS_PER_HOUR=5
   for i in $(seq 1 5); do
-    echo "$((now - i))" >> ".kova-loop/.rate_limit_state"
+    echo "$((now - i))" >> ".kavex-loop/.rate_limit_state"
   done
   local rc=0
   rate_limit_check || rc=$?
@@ -58,49 +58,49 @@ teardown() {
 }
 
 @test "rate_limit_check: sets RATE_LIMIT_CURRENT" {
-  rate_limit_init ".kova-loop"
+  rate_limit_init ".kavex-loop"
   local now
   now=$(date +%s)
-  echo "$((now - 10))" >> ".kova-loop/.rate_limit_state"
-  echo "$((now - 20))" >> ".kova-loop/.rate_limit_state"
+  echo "$((now - 10))" >> ".kavex-loop/.rate_limit_state"
+  echo "$((now - 20))" >> ".kavex-loop/.rate_limit_state"
   rate_limit_check
   assert_equal "$RATE_LIMIT_CURRENT" "2"
 }
 
 @test "rate_limit_check: prunes old timestamps" {
-  rate_limit_init ".kova-loop"
+  rate_limit_init ".kavex-loop"
   local now
   now=$(date +%s)
   # Old timestamp (2 hours ago)
-  echo "$((now - 7200))" >> ".kova-loop/.rate_limit_state"
+  echo "$((now - 7200))" >> ".kavex-loop/.rate_limit_state"
   # Recent timestamp
-  echo "$((now - 10))" >> ".kova-loop/.rate_limit_state"
+  echo "$((now - 10))" >> ".kavex-loop/.rate_limit_state"
   rate_limit_check
   assert_equal "$RATE_LIMIT_CURRENT" "1"
   # Old timestamp should be pruned from file
   local line_count
-  line_count=$(wc -l < ".kova-loop/.rate_limit_state" | tr -d ' ')
+  line_count=$(wc -l < ".kavex-loop/.rate_limit_state" | tr -d ' ')
   assert_equal "$line_count" "1"
 }
 
 @test "rate_limit_check: sets RATE_LIMIT_WAIT_SECONDS when at limit" {
-  rate_limit_init ".kova-loop"
+  rate_limit_init ".kavex-loop"
   local now
   now=$(date +%s)
   export MAX_INVOCATIONS_PER_HOUR=2
-  echo "$((now - 100))" >> ".kova-loop/.rate_limit_state"
-  echo "$((now - 50))" >> ".kova-loop/.rate_limit_state"
+  echo "$((now - 100))" >> ".kavex-loop/.rate_limit_state"
+  echo "$((now - 50))" >> ".kavex-loop/.rate_limit_state"
   rate_limit_check || true
   # Wait seconds should be > 0
   [ "$RATE_LIMIT_WAIT_SECONDS" -gt 0 ]
 }
 
 @test "rate_limit_check: respects custom MAX_INVOCATIONS_PER_HOUR" {
-  rate_limit_init ".kova-loop"
+  rate_limit_init ".kavex-loop"
   local now
   now=$(date +%s)
-  echo "$((now - 10))" >> ".kova-loop/.rate_limit_state"
-  echo "$((now - 20))" >> ".kova-loop/.rate_limit_state"
+  echo "$((now - 10))" >> ".kavex-loop/.rate_limit_state"
+  echo "$((now - 20))" >> ".kavex-loop/.rate_limit_state"
   # Default is 100, so 2 should be fine
   rate_limit_check
   local rc=$?
@@ -115,22 +115,22 @@ teardown() {
 # --- rate_limit_record ---
 
 @test "rate_limit_record: appends timestamp to state file" {
-  rate_limit_init ".kova-loop"
+  rate_limit_init ".kavex-loop"
   rate_limit_record
   local line_count
-  line_count=$(wc -l < ".kova-loop/.rate_limit_state" | tr -d ' ')
+  line_count=$(wc -l < ".kavex-loop/.rate_limit_state" | tr -d ' ')
   assert_equal "$line_count" "1"
   # Second record
   rate_limit_record
-  line_count=$(wc -l < ".kova-loop/.rate_limit_state" | tr -d ' ')
+  line_count=$(wc -l < ".kavex-loop/.rate_limit_state" | tr -d ' ')
   assert_equal "$line_count" "2"
 }
 
 @test "rate_limit_record: writes valid epoch timestamps" {
-  rate_limit_init ".kova-loop"
+  rate_limit_init ".kavex-loop"
   rate_limit_record
   local ts
-  ts=$(cat ".kova-loop/.rate_limit_state")
+  ts=$(cat ".kavex-loop/.rate_limit_state")
   # Should be a number > 1700000000 (Nov 2023)
   [ "$ts" -gt 1700000000 ]
 }

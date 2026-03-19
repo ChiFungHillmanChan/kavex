@@ -13,15 +13,15 @@ source "$_LIB_DIR/detect-stack.sh"
 source "$_LIB_DIR/codex-assist.sh"
 
 if ! require_jq; then
-  echo "KOVA WARNING: jq not installed. Stop gate skipped." >&2
+  echo "KAVEX WARNING: jq not installed. Stop gate skipped." >&2
   exit 0
 fi
 
 INPUT=$(cat)
 STOP_ACTIVE=$(echo "$INPUT" | jq -r '.stop_hook_active // false' 2>/dev/null)
 [ "$STOP_ACTIVE" = "true" ] && exit 0
-# Skip stop gate during Kova Smart Loop (it runs its own verification)
-[ "${KOVA_LOOP_ACTIVE:-}" = "1" ] && exit 0
+# Skip stop gate during Kavex Smart Loop (it runs its own verification)
+[ "${KAVEX_LOOP_ACTIVE:-}" = "1" ] && exit 0
 
 cd "$CLAUDE_PROJECT_DIR" || exit 0
 
@@ -35,28 +35,28 @@ fi
 
 # --- Retry counter (max 3 attempts) ---
 PROJ_HASH=$(project_hash "$CLAUDE_PROJECT_DIR")
-KOVA_TMP="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/kova-$PROJ_HASH"
-if [ -d "$KOVA_TMP" ]; then
+KAVEX_TMP="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/kavex-$PROJ_HASH"
+if [ -d "$KAVEX_TMP" ]; then
   # Ownership check: detect symlink attacks by verifying we own the directory
-  if [ ! -O "$KOVA_TMP" ]; then
+  if [ ! -O "$KAVEX_TMP" ]; then
     echo "STOP GATE: Temp directory ownership mismatch — possible symlink attack. Blocking." >&2
     exit 1
   fi
 else
   # Create atomically via mktemp, then move to deterministic path
-  _kova_mktemp=$(mktemp -d 2>/dev/null) || { echo "STOP GATE: Failed to create temp directory." >&2; exit 1; }
-  chmod 700 "$_kova_mktemp"
-  if ! mv "$_kova_mktemp" "$KOVA_TMP" 2>/dev/null; then
+  _kavex_mktemp=$(mktemp -d 2>/dev/null) || { echo "STOP GATE: Failed to create temp directory." >&2; exit 1; }
+  chmod 700 "$_kavex_mktemp"
+  if ! mv "$_kavex_mktemp" "$KAVEX_TMP" 2>/dev/null; then
     # Race: another process created it first — verify ownership
-    rm -rf "$_kova_mktemp"
-    if [ ! -O "$KOVA_TMP" ]; then
+    rm -rf "$_kavex_mktemp"
+    if [ ! -O "$KAVEX_TMP" ]; then
       echo "STOP GATE: Temp directory ownership mismatch — possible symlink attack. Blocking." >&2
       exit 1
     fi
   fi
 fi
-COUNTER_FILE="$KOVA_TMP/verify-stop-counter"
-HISTORY_FILE="$KOVA_TMP/verify-stop-history"
+COUNTER_FILE="$KAVEX_TMP/verify-stop-counter"
+HISTORY_FILE="$KAVEX_TMP/verify-stop-history"
 ATTEMPT=$(cat "$COUNTER_FILE" 2>/dev/null || echo "0")
 ATTEMPT=$((ATTEMPT + 1))
 echo "$ATTEMPT" > "$COUNTER_FILE"
@@ -82,7 +82,7 @@ $(cat "$HISTORY_FILE" 2>/dev/null || echo "No history available")
 DEBUGEOF
 
   # Cross-model diagnosis before self-heal
-  codex_diag="$KOVA_TMP/codex-diag"
+  codex_diag="$KAVEX_TMP/codex-diag"
   if codex_diagnose "DEBUG_LOG.md" "$codex_diag"; then
     echo "" >> DEBUG_LOG.md
     cat "$codex_diag" >> DEBUG_LOG.md
@@ -105,7 +105,7 @@ DEBUGEOF
     PROMPT="Read DEBUG_LOG.md and fix all failures listed. Pay special attention to the 'Cross-Model Diagnosis [codex]' section if present — it contains analysis from a different AI model. Run tests after each fix. Do not ask questions — use the assumption protocol."
     CLAUDE_SELF_HEAL=1 nohup claude -p "$PROMPT" \
       --allowedTools "Edit,Write,Bash,Read,Glob,Grep" \
-      > "$KOVA_TMP/self-heal.log" 2>&1 &
+      > "$KAVEX_TMP/self-heal.log" 2>&1 &
     echo "STOP GATE: Self-healing session spawned (PID: $!)." >&2
   else
     echo "STOP GATE: claude CLI not found. Manual fix required." >&2
@@ -121,7 +121,7 @@ FAILURES=0
 RESULTS=""
 
 # --- Fast mode: skip slow layers (1-4, 7), only run lint + typecheck ---
-# Full verification is handled by kova-loop.sh (verify-gate.sh) and kova-commit-gate.sh
+# Full verification is handled by kavex-loop.sh (verify-gate.sh) and kavex-commit-gate.sh
 RESULTS="$RESULTS\n[1] SKIP — Stop hook: fast mode"
 RESULTS="$RESULTS\n[2] SKIP — Stop hook: fast mode"
 RESULTS="$RESULTS\n[3] SKIP — Stop hook: fast mode"

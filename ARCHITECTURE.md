@@ -1,12 +1,12 @@
-# Kova Architecture
+# Kavex Architecture
 
 ## Overview
 
-Kova is a **bash-enforced engineering protocol** for Claude Code. The core principle:
+Kavex is a **bash-enforced engineering protocol** for Claude Code. The core principle:
 
 > **Claude is the worker. Bash is the boss.**
 
-Claude Code supports a hook system that intercepts tool calls (file writes, bash commands, stop events) before and after they execute. Kova registers hooks via `hooks.json` that run shell scripts at these interception points. Because hooks run outside Claude's context — in a separate bash process — Claude cannot skip, modify, or argue its way out of verification.
+Claude Code supports a hook system that intercepts tool calls (file writes, bash commands, stop events) before and after they execute. Kavex registers hooks via `hooks.json` that run shell scripts at these interception points. Because hooks run outside Claude's context — in a separate bash process — Claude cannot skip, modify, or argue its way out of verification.
 
 This is not prompt engineering. It is **process enforcement**.
 
@@ -52,7 +52,7 @@ Claude Code's hook system pipes tool-call metadata as JSON to hook scripts via s
 ```
 PreToolUse:
   Bash           -> block-dangerous.sh    Block rm -rf /, DROP TABLE, force push, etc.
-                 -> kova-commit-gate.sh   Block git commit without verification proof
+                 -> kavex-commit-gate.sh   Block git commit without verification proof
   Write|Edit     -> protect-files.sh      Block writes to .env, credentials, etc.
 
 PostToolUse:
@@ -105,7 +105,7 @@ The stop hook runs layers 5-6 only because build and test suites can take minute
 
 ## Team Loop State Machine
 
-The Team Loop (`kova-loop.sh`) iterates over items in a PRD file. Each item goes through a state machine:
+The Team Loop (`kavex-loop.sh`) iterates over items in a PRD file. Each item goes through a state machine:
 
 ```
                         +------------------+
@@ -179,7 +179,7 @@ The Team Loop (`kova-loop.sh`) iterates over items in a PRD file. Each item goes
 
 ## Trust Model
 
-Kova's trust model is based on **boundary enforcement**:
+Kavex's trust model is based on **boundary enforcement**:
 
 ```
   +---------------------------------------------+
@@ -208,9 +208,9 @@ Key properties:
 
 2. **jq failure = fail-closed.** Hooks parse tool-call JSON with `jq`. If `jq` is missing or parsing fails, the hook blocks the operation rather than silently allowing it. This prevents bypass via malformed input.
 
-3. **User can disable hooks.** This is by design, not a bug. Kova enforces engineering discipline, not security policy. The user is trusted; Claude is instrumented.
+3. **User can disable hooks.** This is by design, not a bug. Kavex enforces engineering discipline, not security policy. The user is trusted; Claude is instrumented.
 
-4. **Verification proof is required for commits.** The commit gate (`kova-commit-gate.sh`) checks for a proof file written by `verify-gate.sh`. Without this file, `git commit` is blocked. The proof file is timestamped and project-scoped to prevent replay.
+4. **Verification proof is required for commits.** The commit gate (`kavex-commit-gate.sh`) checks for a proof file written by `verify-gate.sh`. Without this file, `git commit` is blocked. The proof file is timestamped and project-scoped to prevent replay.
 
 5. **Bypass detection.** Hooks check for known bypass patterns (e.g., piping through `sh`, base64 encoding commands, using `env` to circumvent PATH restrictions). Detected bypass attempts are blocked with an explanation.
 
@@ -224,7 +224,7 @@ Previous versions used prompt instructions to tell Claude to run verification. C
 
 ### Why `mktemp` for temp directories
 
-Kova creates temporary directories for verification output, proof files, and lock files. Using `mktemp -d` (with mode 700) prevents **symlink attacks** where an attacker pre-creates a predictable temp path as a symlink to a sensitive location. `mktemp` generates unpredictable names and creates the directory atomically.
+Kavex creates temporary directories for verification output, proof files, and lock files. Using `mktemp -d` (with mode 700) prevents **symlink attacks** where an attacker pre-creates a predictable temp path as a symlink to a sensitive location. `mktemp` generates unpredictable names and creates the directory atomically.
 
 ### Why `mkdir` for locks
 

@@ -1,4 +1,4 @@
-# Kova Engineering Protocol
+# Kavex Engineering Protocol
 # Drop this file into ANY project root.
 
 ## Identity

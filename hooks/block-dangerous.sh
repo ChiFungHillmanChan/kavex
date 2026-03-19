@@ -7,13 +7,13 @@ _HOOK_DIR="$(dirname "$0")"
 source "$_HOOK_DIR/lib/require-jq.sh"
 
 if ! require_jq; then
-  echo '{"decision":"block","reason":"KOVA: jq is not installed. Cannot verify command safety. Install jq to proceed."}'
+  echo '{"decision":"block","reason":"KAVEX: jq is not installed. Cannot verify command safety. Install jq to proceed."}'
   exit 0
 fi
 
 INPUT=$(cat)
 if ! CMD=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null); then
-  echo '{"decision":"block","reason":"KOVA: Failed to parse hook input. Blocking for safety."}'
+  echo '{"decision":"block","reason":"KAVEX: Failed to parse hook input. Blocking for safety."}'
   exit 0
 fi
 
@@ -144,7 +144,7 @@ true
 
 if [ -n "$matched" ]; then
   echo "BLOCKED: Dangerous command detected: \"$matched\"" >&2
-  echo '{"decision":"block","reason":"This command matches a dangerous pattern and has been blocked by Kova safety protocol. If you genuinely need to run this, ask the human explicitly."}'
+  echo '{"decision":"block","reason":"This command matches a dangerous pattern and has been blocked by Kavex safety protocol. If you genuinely need to run this, ask the human explicitly."}'
   exit 0
 fi
 

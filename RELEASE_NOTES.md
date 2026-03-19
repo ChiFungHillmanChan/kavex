@@ -2,15 +2,15 @@
 
 ## v0.3.0 (2026-03-11)
 
-Kova v0.3.0 introduces plugin distribution, cross-model diagnostics, and repo restructuring for public release.
+Kavex v0.3.0 introduces plugin distribution, cross-model diagnostics, and repo restructuring for public release.
 
 ### Highlights
 
-- **Plugin Distribution** — Install via `claude /install kova` or `claude /install kova-full` (no git clone needed).
+- **Plugin Distribution** — Install via `claude /install kavex` or `claude /install kavex-full` (no git clone needed).
 - **Repo Restructure** — Hooks, commands, and scripts moved to top-level directories for cleaner layout.
 - **Cross-Model Diagnostics** — Optional Codex CLI integration for cross-model failure diagnosis and code review.
 - **Safer Loop Commits** — Replaced `git add -A` with filtered staging that excludes sensitive files and unrelated changes.
-- **Legacy Install Fix** — Fresh installs now work immediately without needing `kova activate` to repair hook paths.
+- **Legacy Install Fix** — Fresh installs now work immediately without needing `kavex activate` to repair hook paths.
 - **CI Updated** — GitHub Actions workflow now validates the actual repo layout.
 
 ### Breaking Changes
@@ -21,11 +21,11 @@ Kova v0.3.0 introduces plugin distribution, cross-model diagnostics, and repo re
 ### Testing
 
 - Full Bats suite passing: **all tests green** (count auto-updated by CI badge).
-- New tests shipped: codex-assist, kova-statusline, verify-on-stop self-heal, hook-name consistency regression.
+- New tests shipped: codex-assist, kavex-statusline, verify-on-stop self-heal, hook-name consistency regression.
 
 ### Upgrade Notes
 
-- Plugin users: run `claude /install kova-full` to get the latest.
+- Plugin users: run `claude /install kavex-full` to get the latest.
 - Legacy users: re-run `bash install.sh` in your project to pick up path fixes.
 - `jq` remains a required runtime dependency for hooks.
 
@@ -33,14 +33,14 @@ Kova v0.3.0 introduces plugin distribution, cross-model diagnostics, and repo re
 
 ## v0.2.0 (2026-02-21)
 
-Kova v0.2.0 focuses on reliability controls and operability for autonomous loops.
+Kavex v0.2.0 focuses on reliability controls and operability for autonomous loops.
 
 ### Highlights
 
 - Added rate-limiting primitives in `hooks/lib/rate-limiter.sh` to cap repeated loop invocations.
 - Added circuit-breaker logic in `hooks/lib/circuit-breaker.sh` to stop stuck/no-progress loops with a clear report.
-- Integrated both controls into `hooks/kova-loop.sh`.
-- Added `kova-monitor` tmux dashboard with `start`, `attach`, `stop`, `status`, and `dashboard`.
+- Integrated both controls into `hooks/kavex-loop.sh`.
+- Added `kavex-monitor` tmux dashboard with `start`, `attach`, `stop`, `status`, and `dashboard`.
 - Extended installer with global mode (`install.sh --global`) and setup flow support.
 - Updated install payload to include new loop libraries and monitor binary.
 
@@ -50,7 +50,7 @@ Kova v0.2.0 focuses on reliability controls and operability for autonomous loops
 - New tests shipped in this release:
   - `tests/unit/rate-limiter.bats`
   - `tests/unit/circuit-breaker.bats`
-  - `tests/unit/kova-monitor.bats`
+  - `tests/unit/kavex-monitor.bats`
   - `tests/integration/monitor.bats`
   - `tests/integration/global-install.bats`
 
@@ -61,7 +61,7 @@ Kova v0.2.0 focuses on reliability controls and operability for autonomous loops
 
 ```bash
 bash install.sh --global
-kova setup
+kavex setup
 ```
 
 - `jq` remains a required runtime dependency for hooks.

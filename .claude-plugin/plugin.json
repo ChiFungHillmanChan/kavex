@@ -1,12 +1,12 @@
 {
-  "name": "kova-full",
-  "description": "Full Kova engineering suite — autonomous verification, enforcement hooks, code review, team loop",
+  "name": "kavex-full",
+  "description": "Full Kavex engineering suite — autonomous verification, enforcement hooks, code review, team loop",
   "author": {
     "name": "Hillman Chan"
   },
   "version": "0.3.0",
-  "homepage": "https://github.com/ChiFungHillmanChan/kova",
-  "repository": "https://github.com/ChiFungHillmanChan/kova",
+  "homepage": "https://github.com/ChiFungHillmanChan/kavex",
+  "repository": "https://github.com/ChiFungHillmanChan/kavex",
   "license": "MIT",
   "keywords": [
     "engineering",

@@ -7,7 +7,7 @@ setup() {
   SANDBOX="$(mktemp -d)"
   cd "$SANDBOX"
 
-  source "$KOVA_ROOT/hooks/lib/parse-failures.sh"
+  source "$KAVEX_ROOT/hooks/lib/parse-failures.sh"
 }
 
 teardown() {

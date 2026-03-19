@@ -4,21 +4,21 @@
 
 tmux（terminal multiplexer）可以喺一個 terminal 入面開多個 session。最強嘅地方係：**關咗 terminal 或者斷線，程式繼續跑**。
 
-## Kova 點用 tmux
+## Kavex 點用 tmux
 
-tmux 係 **可選嘅**，只有 `kova-monitor` 先要用。佢開一個分割畫面嘅 dashboard：
+tmux 係 **可選嘅**，只有 `kavex-monitor` 先要用。佢開一個分割畫面嘅 dashboard：
 
 ```
 ┌─────────────────────────────────┬──────────────────┐
 │                                 │                  │
-│  kova-loop 運行中               │  即時 dashboard  │
+│  kavex-loop 運行中               │  即時 dashboard  │
 │  (implement → verify →          │  (進度、狀態、    │
 │   review → commit)              │   卡住嘅項目)    │
 │                                 │                  │
 └─────────────────────────────────┴──────────────────┘
 ```
 
-冇 tmux 一樣可以用 Kova——直接跑 `/kova:loop` 或者 `bash .claude/hooks/kova-loop.sh prd.md` 就得。
+冇 tmux 一樣可以用 Kavex——直接跑 `/kavex:loop` 或者 `bash .claude/hooks/kavex-loop.sh prd.md` 就得。
 
 ---
 
@@ -152,36 +152,36 @@ tmux attach -t remote-work
 
 ---
 
-## 配合 Kova 使用
+## 配合 Kavex 使用
 
 ### 啟動 monitor dashboard
 
 ```bash
-kova-monitor start docs/prd.md
+kavex-monitor start docs/prd.md
 # 或者
-.claude/kova monitor start docs/prd.md
+.claude/kavex monitor start docs/prd.md
 ```
 
 會建立一個 tmux session：
-- 左邊面板：`kova-loop.sh` 跑緊你嘅 PRD
+- 左邊面板：`kavex-loop.sh` 跑緊你嘅 PRD
 - 右邊面板：即時進度 dashboard
 
 ### 接入跑緊嘅 monitor
 
 ```bash
-kova-monitor attach
+kavex-monitor attach
 ```
 
 ### 睇狀態
 
 ```bash
-kova-monitor status
+kavex-monitor status
 ```
 
 ### 停止 monitor
 
 ```bash
-kova-monitor stop
+kavex-monitor stop
 ```
 
 ### Detach 但唔停止

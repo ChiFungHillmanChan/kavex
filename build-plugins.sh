@@ -1,54 +1,54 @@
 #!/bin/bash
-# build-plugins.sh — Assemble kova and kova-full plugin directories for distribution
+# build-plugins.sh — Assemble kavex and kavex-full plugin directories for distribution
 # Usage: bash build-plugins.sh
-# Output: dist/kova/ and dist/kova-full/
+# Output: dist/kavex/ and dist/kavex-full/
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DIST_DIR="$SCRIPT_DIR/dist"
 
-echo "Building Kova plugins..."
+echo "Building Kavex plugins..."
 echo ""
 
 # Clean previous build
 rm -rf "$DIST_DIR"
-mkdir -p "$DIST_DIR/kova" "$DIST_DIR/kova-full"
+mkdir -p "$DIST_DIR/kavex" "$DIST_DIR/kavex-full"
 
 # ─────────────────────────────────────────────
-# Plugin 1: kova (lightweight — commands + skills)
+# Plugin 1: kavex (lightweight — commands + skills)
 # ─────────────────────────────────────────────
-echo "Building kova (lightweight)..."
+echo "Building kavex (lightweight)..."
 
-cp -r "$SCRIPT_DIR/plugins/kova/.claude-plugin" "$DIST_DIR/kova/"
-cp -r "$SCRIPT_DIR/plugins/kova/commands"       "$DIST_DIR/kova/"
-cp -r "$SCRIPT_DIR/plugins/kova/skills"         "$DIST_DIR/kova/"
-cp "$SCRIPT_DIR/README.md"                      "$DIST_DIR/kova/"
-cp "$SCRIPT_DIR/LICENSE"                        "$DIST_DIR/kova/"
+cp -r "$SCRIPT_DIR/plugins/kavex/.claude-plugin" "$DIST_DIR/kavex/"
+cp -r "$SCRIPT_DIR/plugins/kavex/commands"       "$DIST_DIR/kavex/"
+cp -r "$SCRIPT_DIR/plugins/kavex/skills"         "$DIST_DIR/kavex/"
+cp "$SCRIPT_DIR/README.md"                      "$DIST_DIR/kavex/"
+cp "$SCRIPT_DIR/LICENSE"                        "$DIST_DIR/kavex/"
 
-echo "  dist/kova/ — commands + skills"
+echo "  dist/kavex/ — commands + skills"
 
 # ─────────────────────────────────────────────
-# Plugin 2: kova-full (complete — commands + skills + hooks + enforcement)
+# Plugin 2: kavex-full (complete — commands + skills + hooks + enforcement)
 # ─────────────────────────────────────────────
-echo "Building kova-full (complete)..."
+echo "Building kavex-full (complete)..."
 
-cp -r "$SCRIPT_DIR/.claude-plugin"  "$DIST_DIR/kova-full/"
-cp -r "$SCRIPT_DIR/commands"        "$DIST_DIR/kova-full/"
-cp -r "$SCRIPT_DIR/skills"          "$DIST_DIR/kova-full/"
-cp -r "$SCRIPT_DIR/hooks"           "$DIST_DIR/kova-full/"
-mkdir -p "$DIST_DIR/kova-full/scripts"
-cp "$SCRIPT_DIR/scripts/kova"         "$DIST_DIR/kova-full/scripts/"
-cp "$SCRIPT_DIR/scripts/kova-monitor" "$DIST_DIR/kova-full/scripts/"
-cp "$SCRIPT_DIR/README.md"            "$DIST_DIR/kova-full/"
-cp "$SCRIPT_DIR/LICENSE"              "$DIST_DIR/kova-full/"
+cp -r "$SCRIPT_DIR/.claude-plugin"  "$DIST_DIR/kavex-full/"
+cp -r "$SCRIPT_DIR/commands"        "$DIST_DIR/kavex-full/"
+cp -r "$SCRIPT_DIR/skills"          "$DIST_DIR/kavex-full/"
+cp -r "$SCRIPT_DIR/hooks"           "$DIST_DIR/kavex-full/"
+mkdir -p "$DIST_DIR/kavex-full/scripts"
+cp "$SCRIPT_DIR/scripts/kavex"         "$DIST_DIR/kavex-full/scripts/"
+cp "$SCRIPT_DIR/scripts/kavex-monitor" "$DIST_DIR/kavex-full/scripts/"
+cp "$SCRIPT_DIR/README.md"            "$DIST_DIR/kavex-full/"
+cp "$SCRIPT_DIR/LICENSE"              "$DIST_DIR/kavex-full/"
 
 # Make scripts executable
-chmod +x "$DIST_DIR/kova-full/hooks/"*.sh
-chmod +x "$DIST_DIR/kova-full/hooks/lib/"*.sh
-chmod +x "$DIST_DIR/kova-full/scripts/"*
+chmod +x "$DIST_DIR/kavex-full/hooks/"*.sh
+chmod +x "$DIST_DIR/kavex-full/hooks/lib/"*.sh
+chmod +x "$DIST_DIR/kavex-full/scripts/"*
 
-echo "  dist/kova-full/ — commands + skills + hooks + scripts"
+echo "  dist/kavex-full/ — commands + skills + hooks + scripts"
 
 # ─────────────────────────────────────────────
 # Summary
@@ -56,9 +56,9 @@ echo "  dist/kova-full/ — commands + skills + hooks + scripts"
 echo ""
 echo "Build complete!"
 echo ""
-echo "  dist/kova/      — Lightweight plugin (commands + skills)"
-echo "  dist/kova-full/  — Full plugin (commands + skills + hooks + enforcement)"
+echo "  dist/kavex/      — Lightweight plugin (commands + skills)"
+echo "  dist/kavex-full/  — Full plugin (commands + skills + hooks + enforcement)"
 echo ""
 echo "To test locally:"
-echo "  claude /install file://$DIST_DIR/kova"
-echo "  claude /install file://$DIST_DIR/kova-full"
+echo "  claude /install file://$DIST_DIR/kavex"
+echo "  claude /install file://$DIST_DIR/kavex-full"

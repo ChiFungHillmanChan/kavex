@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Report a bug in Kova
+about: Report a bug in Kavex
 title: "[Bug] "
 labels: bug
 assignees: ''
@@ -28,7 +28,7 @@ What actually happened. Include error output if available.
 
 - **OS:** (e.g., macOS 15.3, Ubuntu 24.04)
 - **Shell:** (e.g., zsh 5.9, bash 5.2)
-- **Kova version:** (run `kova --version` or check `package.json`)
+- **Kavex version:** (run `kavex --version` or check `package.json`)
 - **Claude Code version:** (run `claude --version`)
 - **jq version:** (run `jq --version`)
 - **Install method:** (plugin via `claude /install` or legacy `install.sh`)

@@ -1,5 +1,5 @@
 #!/bin/bash
-# rate-limiter.sh — Rate limiting for Kova Loop API calls
+# rate-limiter.sh — Rate limiting for Kavex Loop API calls
 # Source this file: source "$LIB_DIR/rate-limiter.sh"
 
 # State file path (set by rate_limit_init)

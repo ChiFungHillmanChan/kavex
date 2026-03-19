@@ -1,6 +1,6 @@
-# Kova Configuration Guide
+# Kavex Configuration Guide
 
-Common configuration tasks for Kova, with the exact file and line to change.
+Common configuration tasks for Kavex, with the exact file and line to change.
 
 ---
 
@@ -11,10 +11,10 @@ The Team Loop defaults to **20 iterations**. To change it:
 **Option A: CLI flag (per-run)**
 
 ```bash
-bash hooks/kova-loop.sh my-prd.md --max-iterations 10
+bash hooks/kavex-loop.sh my-prd.md --max-iterations 10
 ```
 
-**Option B: Edit the default in `hooks/kova-loop.sh`**
+**Option B: Edit the default in `hooks/kavex-loop.sh`**
 
 Find this line near the top:
 
@@ -24,7 +24,7 @@ MAX_ITERATIONS=20
 
 Change `20` to your preferred limit.
 
-> You can also set `--max-fix-attempts N` to control how many times Kova retries a single stuck item (default: 5).
+> You can also set `--max-fix-attempts N` to control how many times Kavex retries a single stuck item (default: 5).
 
 ---
 
@@ -35,18 +35,18 @@ The stop gate runs lint + typecheck every time Claude stops. To bypass it:
 **Option A: Environment variable (temporary)**
 
 ```bash
-KOVA_LOOP_ACTIVE=1 claude
+KAVEX_LOOP_ACTIVE=1 claude
 ```
 
-When `KOVA_LOOP_ACTIVE=1` is set, the stop gate knows it is inside a loop iteration and skips the interactive check.
+When `KAVEX_LOOP_ACTIVE=1` is set, the stop gate knows it is inside a loop iteration and skips the interactive check.
 
 **Option B: Disable all hooks**
 
 ```bash
-kova deactivate
+kavex deactivate
 ```
 
-This turns off every Kova hook (stop gate, file protection, command blocking, auto-format). Re-enable with `kova activate`.
+This turns off every Kavex hook (stop gate, file protection, command blocking, auto-format). Re-enable with `kavex activate`.
 
 ---
 
@@ -93,7 +93,7 @@ BLOCKED_PATTERNS=(
 )
 ```
 
-Patterns are matched case-insensitively using substring search. Kova also normalizes quotes and backslash escapes before matching, so obfuscated variants are caught automatically.
+Patterns are matched case-insensitively using substring search. Kavex also normalizes quotes and backslash escapes before matching, so obfuscated variants are caught automatically.
 
 To add a **warning** instead of a hard block, add to the `WARN_PATTERNS` array lower in the same file:
 
@@ -109,7 +109,7 @@ WARN_PATTERNS=(
 
 ## I want to add Codex cross-model review
 
-Kova auto-detects Codex availability. You just need to install it and set your API key.
+Kavex auto-detects Codex availability. You just need to install it and set your API key.
 
 **Step 1: Install Codex CLI globally**
 
@@ -125,9 +125,9 @@ export OPENAI_API_KEY="sk-..."
 
 Add this to your shell profile (`.zshrc`, `.bashrc`) to persist it.
 
-That's it. Kova's `hooks/lib/codex-assist.sh` calls `command -v codex` at runtime. When available, Codex is used for cross-model diagnosis after repeated failures and for code review.
+That's it. Kavex's `hooks/lib/codex-assist.sh` calls `command -v codex` at runtime. When available, Codex is used for cross-model diagnosis after repeated failures and for code review.
 
-You can also set `CODEX_TIMEOUT` (default: 120 seconds) to control how long Kova waits for a Codex response.
+You can also set `CODEX_TIMEOUT` (default: 120 seconds) to control how long Kavex waits for a Codex response.
 
 ---
 
@@ -139,7 +139,7 @@ Set the `MAX_INVOCATIONS_PER_HOUR` environment variable:
 export MAX_INVOCATIONS_PER_HOUR=50
 ```
 
-The default is **100** invocations per rolling hour. When the limit is hit, Kova pauses with a countdown and resumes automatically once the oldest invocation ages out of the window.
+The default is **100** invocations per rolling hour. When the limit is hit, Kavex pauses with a countdown and resumes automatically once the oldest invocation ages out of the window.
 
 ---
 
@@ -169,7 +169,7 @@ Existing formatters: Prettier (JS/TS/CSS/HTML/MD/YAML), Ruff/Black (Python), gof
 Pass `--dry-run` to preview what the Team Loop would do without executing anything:
 
 ```bash
-bash hooks/kova-loop.sh my-prd.md --dry-run
+bash hooks/kavex-loop.sh my-prd.md --dry-run
 ```
 
 This parses the PRD, detects your stack, prints the item list and config, then exits with no changes. Useful for verifying your PRD is parsed correctly before a real run.

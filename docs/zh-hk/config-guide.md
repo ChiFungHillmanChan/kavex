@@ -1,6 +1,6 @@
-# Kova 設定指南
+# Kavex 設定指南
 
-常用嘅 Kova 設定任務，附帶要改嘅確切檔案同位置。
+常用嘅 Kavex 設定任務，附帶要改嘅確切檔案同位置。
 
 ---
 
@@ -11,10 +11,10 @@ Team Loop 預設係 **20 次迭代**。改法如下：
 **方法 A：CLI 旗標（每次執行）**
 
 ```bash
-bash hooks/kova-loop.sh my-prd.md --max-iterations 10
+bash hooks/kavex-loop.sh my-prd.md --max-iterations 10
 ```
 
-**方法 B：改 `hooks/kova-loop.sh` 入面嘅預設值**
+**方法 B：改 `hooks/kavex-loop.sh` 入面嘅預設值**
 
 搵到呢一行（近檔案頂部）：
 
@@ -35,18 +35,18 @@ Stop gate 會喺 Claude 每次停止嘅時候執行 lint + typecheck。要略過
 **方法 A：環境變數（臨時）**
 
 ```bash
-KOVA_LOOP_ACTIVE=1 claude
+KAVEX_LOOP_ACTIVE=1 claude
 ```
 
-設定咗 `KOVA_LOOP_ACTIVE=1`，stop gate 就知道自己喺 loop 迭代入面，會跳過互動檢查。
+設定咗 `KAVEX_LOOP_ACTIVE=1`，stop gate 就知道自己喺 loop 迭代入面，會跳過互動檢查。
 
 **方法 B：停用所有 hooks**
 
 ```bash
-kova deactivate
+kavex deactivate
 ```
 
-呢個會關閉所有 Kova hooks（stop gate、檔案保護、指令封鎖、自動格式化）。用 `kova activate` 重新啟用。
+呢個會關閉所有 Kavex hooks（stop gate、檔案保護、指令封鎖、自動格式化）。用 `kavex activate` 重新啟用。
 
 ---
 
@@ -93,7 +93,7 @@ BLOCKED_PATTERNS=(
 )
 ```
 
-模式會用大小寫不敏感嘅子字串搜尋嚟配對。Kova 配對之前會自動正規化引號同反斜線跳脫字元，所以混淆過嘅變體都會被截獲。
+模式會用大小寫不敏感嘅子字串搜尋嚟配對。Kavex 配對之前會自動正規化引號同反斜線跳脫字元，所以混淆過嘅變體都會被截獲。
 
 要加**警告**而唔係硬封鎖，就加去同一個檔案下面嘅 `WARN_PATTERNS` 陣列：
 
@@ -109,7 +109,7 @@ WARN_PATTERNS=(
 
 ## 我想加 Codex 跨模型審查
 
-Kova 會自動偵測 Codex 有冇裝。你只需要裝好同設定 API key。
+Kavex 會自動偵測 Codex 有冇裝。你只需要裝好同設定 API key。
 
 **步驟 1：全域安裝 Codex CLI**
 
@@ -125,9 +125,9 @@ export OPENAI_API_KEY="sk-..."
 
 將呢行加入你嘅 shell 設定檔（`.zshrc`、`.bashrc`）令佢持久生效。
 
-搞掂。Kova 嘅 `hooks/lib/codex-assist.sh` 會喺執行時用 `command -v codex` 檢查。有 Codex 嘅話，會喺重複失敗後用佢做跨模型診斷同代碼審查。
+搞掂。Kavex 嘅 `hooks/lib/codex-assist.sh` 會喺執行時用 `command -v codex` 檢查。有 Codex 嘅話，會喺重複失敗後用佢做跨模型診斷同代碼審查。
 
-你亦可以設定 `CODEX_TIMEOUT`（預設：120 秒）控制 Kova 等 Codex 回應嘅時間。
+你亦可以設定 `CODEX_TIMEOUT`（預設：120 秒）控制 Kavex 等 Codex 回應嘅時間。
 
 ---
 
@@ -139,7 +139,7 @@ export OPENAI_API_KEY="sk-..."
 export MAX_INVOCATIONS_PER_HOUR=50
 ```
 
-預設係每滾動小時 **100** 次調用。達到上限嘅時候，Kova 會暫停並顯示倒數計時，等最舊嘅調用過期後自動繼續。
+預設係每滾動小時 **100** 次調用。達到上限嘅時候，Kavex 會暫停並顯示倒數計時，等最舊嘅調用過期後自動繼續。
 
 ---
 
@@ -169,7 +169,7 @@ export MAX_INVOCATIONS_PER_HOUR=50
 用 `--dry-run` 預覽 Team Loop 會做咩，唔會執行任何嘢：
 
 ```bash
-bash hooks/kova-loop.sh my-prd.md --dry-run
+bash hooks/kavex-loop.sh my-prd.md --dry-run
 ```
 
 呢個會解析 PRD、偵測你嘅技術棧、列印項目清單同設定，然後退出，唔會作任何更改。適合喺正式執行之前驗證 PRD 有冇被正確解析。

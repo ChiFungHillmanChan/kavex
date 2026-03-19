@@ -1,5 +1,5 @@
 #!/bin/bash
-# verify-gate.sh — Standalone verification gate for Kova Smart Loop
+# verify-gate.sh — Standalone verification gate for Kavex Smart Loop
 # Source this file: source "$(dirname "$0")/lib/verify-gate.sh"
 #
 # Runs the same 7-layer verification as verify-on-stop.sh but:

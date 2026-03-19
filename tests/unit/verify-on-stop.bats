@@ -5,7 +5,7 @@ setup() {
   _common_setup
 
   SANDBOX="$(mktemp -d)"
-  HOOK="$KOVA_ROOT/hooks/verify-on-stop.sh"
+  HOOK="$KAVEX_ROOT/hooks/verify-on-stop.sh"
 
   # Initialize a real git repo in the sandbox so git diff --quiet works
   git init "$SANDBOX" >/dev/null 2>&1
@@ -18,14 +18,14 @@ setup() {
 
 teardown() {
   rm -rf "$SANDBOX"
-  unset CLAUDE_PROJECT_DIR KOVA_LOOP_ACTIVE
+  unset CLAUDE_PROJECT_DIR KAVEX_LOOP_ACTIVE
 }
 
-@test "verify-on-stop: KOVA_LOOP_ACTIVE=1 skips entirely" {
+@test "verify-on-stop: KAVEX_LOOP_ACTIVE=1 skips entirely" {
   # Dirty the tree so we know it's not the git-clean exit
   echo "dirty" > "$SANDBOX/file.txt"
 
-  export KOVA_LOOP_ACTIVE=1
+  export KAVEX_LOOP_ACTIVE=1
   run bash -c 'echo "{}" | bash "$1"' _ "$HOOK"
   assert_success
   refute_output --partial "STOP GATE"

@@ -4,7 +4,7 @@ setup() {
   load "../helpers/test_helper"
   _common_setup
 
-  HOOK="$KOVA_ROOT/hooks/format.sh"
+  HOOK="$KAVEX_ROOT/hooks/format.sh"
   TMPDIR_FMT="$(mktemp -d)"
 }
 

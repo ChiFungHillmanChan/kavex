@@ -14,18 +14,18 @@ teardown() {
 }
 
 @test "uninstall: removes generated settings.json when no backup exists" {
-  run_kova "$SANDBOX" uninstall
+  run_kavex "$SANDBOX" uninstall
 
   [ ! -f "$SANDBOX/.claude/settings.json" ]
 }
 
-@test "uninstall: preserves non-Kova hook libraries" {
+@test "uninstall: preserves non-Kavex hook libraries" {
   cat > "$SANDBOX/.claude/hooks/lib/custom-helper.sh" <<'EOF'
 #!/bin/bash
 echo custom
 EOF
 
-  run_kova "$SANDBOX" uninstall
+  run_kavex "$SANDBOX" uninstall
 
   [ -f "$SANDBOX/.claude/hooks/lib/custom-helper.sh" ]
   [ ! -f "$SANDBOX/.claude/hooks/lib/detect-stack.sh" ]
@@ -56,7 +56,7 @@ EOF
 }
 JSON
 
-  run_kova "$SANDBOX" uninstall
+  run_kavex "$SANDBOX" uninstall
 
   run jq -r '.hooks.PreToolUse[0].hooks[0].command' "$SANDBOX/.claude/settings.local.json"
   assert_success
@@ -66,7 +66,7 @@ JSON
   refute_output --partial "block-dangerous.sh"
 }
 
-@test "uninstall: strips Kova hooks from mixed settings.json without backup" {
+@test "uninstall: strips Kavex hooks from mixed settings.json without backup" {
   cat > "$SANDBOX/.claude/settings.json" <<'JSON'
 {
   "hooks": {
@@ -92,7 +92,7 @@ JSON
 }
 JSON
 
-  run_kova "$SANDBOX" uninstall
+  run_kavex "$SANDBOX" uninstall
 
   [ -f "$SANDBOX/.claude/settings.json" ]
 

@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest a new feature or improvement for Kova
+about: Suggest a new feature or improvement for Kavex
 title: "[Feature] "
 labels: enhancement
 assignees: ''

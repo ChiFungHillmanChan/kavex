@@ -9,11 +9,11 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in Kova, **please do not open a public issue.**
+If you discover a security vulnerability in Kavex, **please do not open a public issue.**
 
 ### Preferred: GitHub Private Vulnerability Reporting
 
-1. Go to [Security → Advisories](https://github.com/ChiFungHillmanChan/kova/security/advisories) on this repository.
+1. Go to [Security → Advisories](https://github.com/ChiFungHillmanChan/kavex/security/advisories) on this repository.
 2. Click **"Report a vulnerability"**.
 3. Fill in the details and submit.
 
@@ -40,11 +40,11 @@ The following are considered in-scope for security reports:
 - Bypass of dangerous-command blocking (`block-dangerous.sh`)
 - Bypass of file-protection rules (`protect-files.sh`)
 - Credential or secret exposure through hook output or logs
-- Path traversal in `install.sh` or `kova` CLI
+- Path traversal in `install.sh` or `kavex` CLI
 
 The following are **out of scope**:
 
-- Issues requiring the user to intentionally disable hooks (`kova deactivate`)
+- Issues requiring the user to intentionally disable hooks (`kavex deactivate`)
 - Social engineering attacks
 - Vulnerabilities in upstream dependencies (report those to the respective projects)
 

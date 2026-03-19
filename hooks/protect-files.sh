@@ -13,13 +13,13 @@ _HOOK_DIR="$(dirname "$0")"
 source "$_HOOK_DIR/lib/require-jq.sh"
 
 if ! require_jq; then
-  echo '{"decision":"block","reason":"KOVA: jq is not installed. Cannot verify file safety. Install jq to proceed."}'
+  echo '{"decision":"block","reason":"KAVEX: jq is not installed. Cannot verify file safety. Install jq to proceed."}'
   exit 0
 fi
 
 INPUT=$(cat)
 if ! FILE=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty' 2>/dev/null); then
-  echo '{"decision":"block","reason":"KOVA: Failed to parse hook input. Blocking for safety."}'
+  echo '{"decision":"block","reason":"KAVEX: Failed to parse hook input. Blocking for safety."}'
   exit 0
 fi
 

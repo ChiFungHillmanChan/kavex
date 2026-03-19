@@ -1,0 +1,25 @@
+{
+  "name": "kavex",
+  "description": "Engineering commands for Claude Code — plan, verify, review, commit workflows",
+  "author": {
+    "name": "Hillman Chan"
+  },
+  "version": "0.3.0",
+  "homepage": "https://github.com/ChiFungHillmanChan/kavex",
+  "repository": "https://github.com/ChiFungHillmanChan/kavex",
+  "license": "MIT",
+  "keywords": [
+    "engineering",
+    "verification",
+    "code-review",
+    "workflow",
+    "autonomous"
+  ],
+  "categories": [
+    "workflow",
+    "engineering"
+  ],
+  "requirements": {
+    "jq": "optional"
+  }
+}

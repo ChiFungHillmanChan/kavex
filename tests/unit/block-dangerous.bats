@@ -4,7 +4,7 @@ setup() {
   load "../helpers/test_helper"
   _common_setup
 
-  HOOK="$KOVA_ROOT/hooks/block-dangerous.sh"
+  HOOK="$KAVEX_ROOT/hooks/block-dangerous.sh"
 }
 
 # Helper: pipe JSON with command into the hook (JSON-escapes backslashes and double quotes)
@@ -240,10 +240,10 @@ run_hook_stderr() {
 @test "block-dangerous: blocks when jq is not installed (fail-closed)" {
   local tmpdir
   tmpdir=$(mktemp -d)
-  cp -r "$KOVA_ROOT/hooks/"* "$tmpdir/"
+  cp -r "$KAVEX_ROOT/hooks/"* "$tmpdir/"
   cat > "$tmpdir/lib/require-jq.sh" << 'MOCK'
 require_jq() {
-  echo "KOVA ERROR: jq is required but not installed. Hook cannot run safely." >&2
+  echo "KAVEX ERROR: jq is required but not installed. Hook cannot run safely." >&2
   return 1
 }
 MOCK

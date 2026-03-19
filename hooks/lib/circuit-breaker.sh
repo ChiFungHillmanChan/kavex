@@ -1,5 +1,5 @@
 #!/bin/bash
-# circuit-breaker.sh — Circuit breaker for Kova Loop
+# circuit-breaker.sh — Circuit breaker for Kavex Loop
 # Stops the loop when it's clearly stuck and burning resources.
 # Source this file: source "$LIB_DIR/circuit-breaker.sh"
 
@@ -59,7 +59,7 @@ circuit_breaker_report() {
     echo "**Next steps:**"
     echo "1. Review STUCK_ITEMS.md and ITERATION_LOG.md for details"
     echo "2. Fix the stuck items manually or simplify the PRD"
-    echo "3. Re-run the loop with \`kova loop <prd>\`"
+    echo "3. Re-run the loop with \`kavex loop <prd>\`"
   } > "$state_dir/CIRCUIT_BREAKER.md"
 
   echo "" >&2

@@ -2,8 +2,8 @@
 .DS_Store
 Thumbs.db
 
-# Kova runtime
-.kova-loop/
+# Kavex runtime
+.kavex-loop/
 DEBUG_LOG.md
 STUCK_ITEMS.md
 

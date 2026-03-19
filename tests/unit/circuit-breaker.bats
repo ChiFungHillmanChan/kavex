@@ -6,9 +6,9 @@ setup() {
 
   SANDBOX="$(mktemp -d)"
   cd "$SANDBOX"
-  mkdir -p ".kova-loop"
+  mkdir -p ".kavex-loop"
 
-  source "$KOVA_ROOT/hooks/lib/circuit-breaker.sh"
+  source "$KAVEX_ROOT/hooks/lib/circuit-breaker.sh"
 }
 
 teardown() {
@@ -99,32 +99,32 @@ teardown() {
 # --- circuit_breaker_report ---
 
 @test "circuit_breaker_report: creates CIRCUIT_BREAKER.md" {
-  circuit_breaker_report ".kova-loop" "test reason" 5 20 2 10
-  [ -f ".kova-loop/CIRCUIT_BREAKER.md" ]
+  circuit_breaker_report ".kavex-loop" "test reason" 5 20 2 10
+  [ -f ".kavex-loop/CIRCUIT_BREAKER.md" ]
 }
 
 @test "circuit_breaker_report: includes reason in report" {
-  circuit_breaker_report ".kova-loop" "3 consecutive stuck" 5 20 2 10
-  run cat ".kova-loop/CIRCUIT_BREAKER.md"
+  circuit_breaker_report ".kavex-loop" "3 consecutive stuck" 5 20 2 10
+  run cat ".kavex-loop/CIRCUIT_BREAKER.md"
   assert_output --partial "3 consecutive stuck"
 }
 
 @test "circuit_breaker_report: includes iteration info" {
-  circuit_breaker_report ".kova-loop" "test" 5 20 2 10
-  run cat ".kova-loop/CIRCUIT_BREAKER.md"
+  circuit_breaker_report ".kavex-loop" "test" 5 20 2 10
+  run cat ".kavex-loop/CIRCUIT_BREAKER.md"
   assert_output --partial "Iteration: 5 / 20"
   assert_output --partial "Current item: 2 / 10"
 }
 
 @test "circuit_breaker_report: includes exit code 2 note" {
-  circuit_breaker_report ".kova-loop" "test" 5 20 2 10
-  run cat ".kova-loop/CIRCUIT_BREAKER.md"
+  circuit_breaker_report ".kavex-loop" "test" 5 20 2 10
+  run cat ".kavex-loop/CIRCUIT_BREAKER.md"
   assert_output --partial "exit code 2"
 }
 
 @test "circuit_breaker_report: includes next steps" {
-  circuit_breaker_report ".kova-loop" "test" 5 20 2 10
-  run cat ".kova-loop/CIRCUIT_BREAKER.md"
+  circuit_breaker_report ".kavex-loop" "test" 5 20 2 10
+  run cat ".kavex-loop/CIRCUIT_BREAKER.md"
   assert_output --partial "Next steps"
   assert_output --partial "STUCK_ITEMS.md"
 }

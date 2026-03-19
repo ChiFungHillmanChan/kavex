@@ -1,7 +1,7 @@
-# Kova Protocol — Full Guide
+# Kavex Protocol — Full Guide
 
 <p align="center">
-  <img src="../../assets/kova-hero.png" alt="Kova — Autonomous Engineering Protocol" width="100%" />
+  <img src="../../assets/kavex-hero.png" alt="Kavex — Autonomous Engineering Protocol" width="100%" />
 </p>
 
 > Drop into **any project** to transform Claude Code from "AI that asks questions" into "autonomous engineering team that ships."
@@ -10,7 +10,7 @@
 
 ## Table of Contents
 
-- [What is Kova?](#what-is-kova)
+- [What is Kavex?](#what-is-kavex)
 - [Installation](#installation)
 - [The 4 Hooks (Automatic)](#the-4-hooks-automatic)
   - [Hook 1: auto-format](#hook-1-formatsh--auto-format)
@@ -35,11 +35,11 @@
 
 ---
 
-## What is Kova?
+## What is Kavex?
 
-Kova is a bundle of rules, scripts, and commands. You install it into any project, and Claude Code transforms from a "you ask, it answers" assistant into an "autonomously builds, tests, fixes, and reviews" engineering team.
+Kavex is a bundle of rules, scripts, and commands. You install it into any project, and Claude Code transforms from a "you ask, it answers" assistant into an "autonomously builds, tests, fixes, and reviews" engineering team.
 
-**After installing Kova, Claude stops asking "should I do this?" — it just does it, verifies its own work, and fixes its own mistakes.**
+**After installing Kavex, Claude stops asking "should I do this?" — it just does it, verifies its own work, and fixes its own mistakes.**
 
 ---
 
@@ -48,40 +48,40 @@ Kova is a bundle of rules, scripts, and commands. You install it into any projec
 ### Option A: Claude Code Plugin (recommended)
 
 ```bash
-claude /install kova          # Lightweight: commands + skills only
-claude /install kova-full     # Full suite: commands + skills + hooks + enforcement
+claude /install kavex          # Lightweight: commands + skills only
+claude /install kavex-full     # Full suite: commands + skills + hooks + enforcement
 ```
 
 No cloning, no scripts. Everything is available immediately after install.
 
 | Plugin | Includes |
 |--------|----------|
-| **kova** | Slash commands + engineering protocol skill |
-| **kova-full** | Everything in kova + safety hooks, verification gate, auto-format, commit gate, team loop |
+| **kavex** | Slash commands + engineering protocol skill |
+| **kavex-full** | Everything in kavex + safety hooks, verification gate, auto-format, commit gate, team loop |
 
 ### Option B: Legacy Install (clone + install.sh)
 
 ```bash
-# Clone Kova
-git clone https://github.com/ChiFungHillmanChan/kova.git ~/kova
+# Clone Kavex
+git clone https://github.com/ChiFungHillmanChan/kavex.git ~/kavex
 
 # Go to your project
 cd /path/to/your/project
 
 # Preview what will be installed
-bash ~/kova/install.sh --dry-run
+bash ~/kavex/install.sh --dry-run
 
-# Install Kova into this project
-bash ~/kova/install.sh
+# Install Kavex into this project
+bash ~/kavex/install.sh
 
 # Optional: install global CLI
-bash ~/kova/install.sh --global
+bash ~/kavex/install.sh --global
 
 # Activate hooks for this project
-kova activate
+kavex activate
 
 # Verify setup
-kova status
+kavex status
 ```
 
 What the installer does:
@@ -101,7 +101,7 @@ What the installer does:
 ## The 4 Hooks (Automatic)
 
 <p align="center">
-  <img src="../../assets/kova-safety.png" alt="Kova 7-Layer Verification Architecture" width="100%" />
+  <img src="../../assets/kavex-safety.png" alt="Kavex 7-Layer Verification Architecture" width="100%" />
 </p>
 
 Hooks are scripts that run automatically. You never type anything — they trigger at specific moments during Claude's work.
@@ -149,7 +149,7 @@ It auto-detects your language and runs the right formatter:
 
 #### Full 7-Layer Verification (Team Loop)
 
-The complete 7-layer verification runs in the **Team Loop** (`/kova:loop`) via `verify-gate.sh`, not on every stop. This includes:
+The complete 7-layer verification runs in the **Team Loop** (`/kavex:loop`) via `verify-gate.sh`, not on every stop. This includes:
 
 1. **Build** — compile your project (npm run build, go build, cargo build, etc.)
 2. **Unit Tests** — run all unit tests with flaky retry (auto-retry once on failure)
@@ -307,13 +307,13 @@ Shows: what was done today, blockers, next steps, velocity.
 ## Team Loop — The Crown Jewel
 
 <p align="center">
-  <img src="../../assets/kova-workflow.png" alt="Kova Team Loop — 6-Phase Workflow" width="100%" />
+  <img src="../../assets/kavex-workflow.png" alt="Kavex Team Loop — 6-Phase Workflow" width="100%" />
 </p>
 
-This is Kova's most powerful feature. You write a PRD (Product Requirements Document — basically a to-do list), then run:
+This is Kavex's most powerful feature. You write a PRD (Product Requirements Document — basically a to-do list), then run:
 
 ```
-/kova:loop docs/my-prd.md
+/kavex:loop docs/my-prd.md
 ```
 
 Claude **automatically implements each item** in your PRD, and every item goes through 6 phases.
@@ -342,7 +342,7 @@ It asks itself:
 - Are the requirements clear?
 - Is anything ambiguous?
 
-**It does NOT ask you.** It makes assumptions and documents them in `.kova-loop/plans/item-N-clarify.md`.
+**It does NOT ask you.** It makes assumptions and documents them in `.kavex-loop/plans/item-N-clarify.md`.
 
 Example output:
 ```
@@ -359,7 +359,7 @@ Unless the item is trivial (e.g., "fix a typo"), Claude will:
 1. Use the `superpowers:brainstorming` skill to generate 2-3 approaches
 2. Pick the best one
 3. Spawn an Explore agent to scan the codebase and map related files/patterns
-4. Write a detailed plan to `.kova-loop/plans/item-N-plan.md`
+4. Write a detailed plan to `.kavex-loop/plans/item-N-plan.md`
 
 The plan is specific to `file:function` level:
 ```
@@ -404,7 +404,7 @@ Same 7-layer gate as described above:
 **If all layers 1-6 pass:** Proceed to Phase 4 (review).
 
 **If any layer fails:**
-- All errors written to `.kova-loop/current-failures.md` with file:line detail
+- All errors written to `.kavex-loop/current-failures.md` with file:line detail
 - Mode set to `fix-verify`
 - Returns to Phase 2 to fix only those specific errors
 - Then Phase 3 runs again
@@ -487,7 +487,7 @@ All findings (4 Claude agents + Codex) are merged into a single list, triaged by
 - **MEDIUM** (moderate) — Logged, does not block
 - **LOW** (minor) — Logged, does not block
 
-Written to `.kova-loop/current-review.md`:
+Written to `.kavex-loop/current-review.md`:
 ```
 - [src/api/auth.ts:42] [security] — SQL injection: user input directly in query
 - [src/pages/Login.tsx:15] [codex] — Missing error boundary for async state
@@ -506,7 +506,7 @@ Claude will:
    ```
    feat(auth): add login page with email/password
 
-   Kova Team Loop — Item 1/3
+   Kavex Team Loop — Item 1/3
    Co-Authored-By: Claude <noreply@anthropic.com>
    ```
 3. `git commit`
@@ -520,21 +520,21 @@ Then move to the next item and restart at Phase 0.
 
 **Progress tracking:**
 After every iteration, Claude updates:
-- `.kova-loop/LOOP_PROGRESS.md` — which items are complete, which is in progress
-- `.kova-loop/ITERATION_LOG.md` — detailed log of each iteration
+- `.kavex-loop/LOOP_PROGRESS.md` — which items are complete, which is in progress
+- `.kavex-loop/ITERATION_LOG.md` — detailed log of each iteration
 
 **Stuck detection:**
 If the same item fails 5 times (default), Claude will:
 - Mark it as STUCK
-- Write to `.kova-loop/STUCK_ITEMS.md`
+- Write to `.kavex-loop/STUCK_ITEMS.md`
 - Skip it and continue to the next item
 
 **Resumable:**
-If you stop midway (disconnect, manual cancel, etc.), all progress is saved in `.kova-loop/`. Next time you run `/kova:loop docs/my-prd.md`, it asks: `resume` / `restart` / `cancel`.
+If you stop midway (disconnect, manual cancel, etc.), all progress is saved in `.kavex-loop/`. Next time you run `/kavex:loop docs/my-prd.md`, it asks: `resume` / `restart` / `cancel`.
 
 **Preview mode:**
 ```
-/kova:loop docs/my-prd.md --dry-run
+/kavex:loop docs/my-prd.md --dry-run
 ```
 Shows the plan without executing anything.
 
@@ -576,7 +576,7 @@ Before merge:
   /simplify                   <- clean up code
 
 Large feature (multiple items):
-  /kova:loop docs/prd.md      <- auto-implement each item, 6 phases each
+  /kavex:loop docs/prd.md      <- auto-implement each item, 6 phases each
 
 End of day:
   /daily-standup              <- see what shipped
@@ -603,10 +603,10 @@ Auto-detection is based on lockfiles and config files (package.json, go.mod, Car
 ## Summary
 
 <p align="center">
-  <img src="../../assets/kova-comparison.png" alt="Without Kova vs With Kova" width="100%" />
+  <img src="../../assets/kavex-comparison.png" alt="Without Kavex vs With Kavex" width="100%" />
 </p>
 
-| Aspect | Without Kova | With Kova |
+| Aspect | Without Kavex | With Kavex |
 |--------|-------------|-----------|
 | Formatting | You format manually | Auto-formatted on every save |
 | Testing | Claude might skip tests | Auto-runs, auto-fixes on failure |
@@ -616,7 +616,7 @@ Auto-detection is based on lockfiles and config files (package.json, go.mod, Car
 | Work mode | You ask, it answers | It does the work, tells you when done |
 | Failure handling | Reports error and stops | Auto-fixes, only stops after 3+ failures |
 
-**Kova's philosophy:** *"You don't trust; you instrument."*
+**Kavex's philosophy:** *"You don't trust; you instrument."*
 
 The goal isn't to hope Claude does the right thing. It's to build a system where **hooks make the wrong thing hard.**
 
@@ -624,7 +624,7 @@ The goal isn't to hope Claude does the right thing. It's to build a system where
 
 ## Current Guarantees and Limits
 
-Kova's safety hooks are enforced by the Claude Code hook system. Here's what that means in practice:
+Kavex's safety hooks are enforced by the Claude Code hook system. Here's what that means in practice:
 
 **What hooks guarantee (when active):**
 - Every stop triggers lint + typecheck (fast stop gate)
@@ -633,9 +633,9 @@ Kova's safety hooks are enforced by the Claude Code hook system. Here's what tha
 - The Team Loop runs full 7-layer verification via bash — Claude cannot skip it
 
 **What hooks do NOT guarantee:**
-- Hooks can be disabled by the user (`kova deactivate` or editing settings.json)
+- Hooks can be disabled by the user (`kavex deactivate` or editing settings.json)
 - The stop gate runs lint + typecheck only — build, tests, and security run in the Team Loop
 - File protection uses pattern matching, not OS-level permissions — unusual filenames could bypass it
 - Hooks require `jq` to be installed; without it, they exit silently
 
-**In short:** Kova makes the wrong thing hard, not impossible. It's an engineering discipline system, not a security sandbox.
+**In short:** Kavex makes the wrong thing hard, not impossible. It's an engineering discipline system, not a security sandbox.

@@ -1,11 +1,11 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-Kova is a Bash-first repository centered on portable Claude Code automation.
+Kavex is a Bash-first repository centered on portable Claude Code automation.
 
-- Root CLI/install scripts: `kova`, `kova-monitor`, `install.sh`
+- Root CLI/install scripts: `kavex`, `kavex-monitor`, `install.sh`
 - Core protocol assets: `.claude/settings.json`, `.claude/hooks/*.sh`, `.claude/hooks/lib/*.sh`
-- Slash-command prompts: `.claude/commands/**/*.md` (including `kova/phases/`)
+- Slash-command prompts: `.claude/commands/**/*.md` (including `kavex/phases/`)
 - Tests: `tests/unit`, `tests/integration`, `tests/regression`, shared helpers in `tests/helpers`
 - Documentation: `README.md`, `CONTRIBUTING.md`, and localized docs in `docs/en`, `docs/zh-hk`, `docs/zh-cn`
 

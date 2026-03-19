@@ -12,34 +12,34 @@ teardown() {
   rm -rf "$SANDBOX"
 }
 
-# --- install copies kova-monitor ---
+# --- install copies kavex-monitor ---
 
-@test "install: copies kova-monitor script" {
+@test "install: copies kavex-monitor script" {
   run_install "$SANDBOX"
-  [ -f "$SANDBOX/.claude/kova-monitor" ]
+  [ -f "$SANDBOX/.claude/kavex-monitor" ]
 }
 
-@test "install: kova-monitor is executable after install" {
+@test "install: kavex-monitor is executable after install" {
   run_install "$SANDBOX"
-  [ -x "$SANDBOX/.claude/kova-monitor" ]
+  [ -x "$SANDBOX/.claude/kavex-monitor" ]
 }
 
-@test "install --dry-run: mentions kova-monitor" {
-  run bash -c "cd '$SANDBOX' && bash '$KOVA_ROOT/install.sh' --dry-run"
+@test "install --dry-run: mentions kavex-monitor" {
+  run bash -c "cd '$SANDBOX' && bash '$KAVEX_ROOT/install.sh' --dry-run"
   assert_success
-  assert_output --partial "kova-monitor"
+  assert_output --partial "kavex-monitor"
 }
 
-# --- kova CLI delegates monitor ---
+# --- kavex CLI delegates monitor ---
 
-@test "kova help: mentions monitor command" {
-  run bash "$KOVA_ROOT/scripts/kova" help
+@test "kavex help: mentions monitor command" {
+  run bash "$KAVEX_ROOT/scripts/kavex" help
   assert_success
   assert_output --partial "monitor"
 }
 
-@test "kova help: mentions setup command" {
-  run bash "$KOVA_ROOT/scripts/kova" help
+@test "kavex help: mentions setup command" {
+  run bash "$KAVEX_ROOT/scripts/kavex" help
   assert_success
   assert_output --partial "setup"
 }

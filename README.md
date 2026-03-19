@@ -1,14 +1,14 @@
-# Kova
+# Kavex
 
 <p align="center">
-  <img src="assets/kova-hero.png" alt="Kova — Autonomous Engineering Protocol" width="100%" />
+  <img src="assets/kavex-hero.png" alt="Kavex — Autonomous Engineering Protocol" width="100%" />
 </p>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
   <a href="https://www.gnu.org/software/bash/"><img src="https://img.shields.io/badge/Shell-Bash-green.svg" alt="Shell"></a>
   <a href="https://docs.anthropic.com/en/docs/claude-code"><img src="https://img.shields.io/badge/Claude_Code-Compatible-blueviolet.svg" alt="Claude Code"></a>
-  <a href="https://github.com/ChiFungHillmanChan/kova/actions/workflows/ci.yml"><img src="https://github.com/ChiFungHillmanChan/kova/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/ChiFungHillmanChan/kavex/actions/workflows/ci.yml"><img src="https://github.com/ChiFungHillmanChan/kavex/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://docs.anthropic.com/en/docs/claude-code"><img src="https://img.shields.io/badge/Claude_Code-Plugin-blueviolet.svg" alt="Plugin"></a>
   <a href="#documentation"><img src="https://img.shields.io/badge/Docs-EN%20%7C%20%E7%B2%B5%E8%AA%9E%20%7C%20%E4%B8%AD%E6%96%87-orange.svg" alt="Languages"></a>
 </p>
@@ -17,7 +17,7 @@
   <strong>Autonomous engineering protocol for Claude Code: safe by default, verified before stop, and built to ship.</strong>
 </p>
 
-**Kova** drops into any project and turns Claude Code from "assistant that asks" into "engineering system that executes, verifies, and self-corrects."
+**Kavex** drops into any project and turns Claude Code from "assistant that asks" into "engineering system that executes, verifies, and self-corrects."
 
 ---
 
@@ -26,8 +26,8 @@
 ### Option A: Install as Claude Code Plugin (recommended)
 
 ```bash
-claude /install kova          # Lightweight: commands + skills
-claude /install kova-full     # Full suite: + hooks + enforcement
+claude /install kavex          # Lightweight: commands + skills
+claude /install kavex-full     # Full suite: + hooks + enforcement
 ```
 
 That's it — no cloning, no scripts. Commands and skills are available immediately.
@@ -35,40 +35,40 @@ That's it — no cloning, no scripts. Commands and skills are available immediat
 ### Option B: Legacy Install (clone + install.sh)
 
 ```bash
-# Clone Kova
-git clone https://github.com/ChiFungHillmanChan/kova.git ~/kova
+# Clone Kavex
+git clone https://github.com/ChiFungHillmanChan/kavex.git ~/kavex
 
 # Go to your project
 cd /path/to/your/project
 
 # Preview what will be installed
-bash ~/kova/install.sh --dry-run
+bash ~/kavex/install.sh --dry-run
 
-# Install Kova into this project
-bash ~/kova/install.sh
+# Install Kavex into this project
+bash ~/kavex/install.sh
 ```
 
 Optional global CLI:
 
 ```bash
 # Install global CLI
-bash ~/kova/install.sh --global
+bash ~/kavex/install.sh --global
 
 # Activate hooks for this project
-kova activate
+kavex activate
 
 # Verify setup
-kova status
+kavex status
 ```
 
 ### Two Plugins
 
 | Plugin | What you get |
 |--------|-------------|
-| **kova** | Slash commands (`/plan`, `/verify-app`, `/code-review`, etc.) + engineering protocol skill |
-| **kova-full** | Everything in kova + safety hooks, verification gate, auto-format, commit gate, team loop |
+| **kavex** | Slash commands (`/plan`, `/verify-app`, `/code-review`, etc.) + engineering protocol skill |
+| **kavex-full** | Everything in kavex + safety hooks, verification gate, auto-format, commit gate, team loop |
 
-Choose `kova` if you want the workflow without enforcement. Choose `kova-full` if you want the full autonomous engineering system.
+Choose `kavex` if you want the workflow without enforcement. Choose `kavex-full` if you want the full autonomous engineering system.
 
 **Requirements:** [Claude Code](https://docs.anthropic.com/en/docs/claude-code), `jq` (required), `gh` (optional), [`@openai/codex`](https://www.npmjs.com/package/@openai/codex) (optional)
 
@@ -102,10 +102,10 @@ Choose `kova` if you want the workflow without enforcement. Choose `kova-full` i
 
 ---
 
-## Why Kova
+## Why Kavex
 
 <p align="center">
-  <img src="assets/kova-comparison.png" alt="Without Kova vs With Kova" width="100%" />
+  <img src="assets/kavex-comparison.png" alt="Without Kavex vs With Kavex" width="100%" />
 </p>
 
 - **Safe by default** — blocks dangerous commands (`rm -rf /`, `DROP TABLE`, force push) and protects secrets
@@ -119,14 +119,14 @@ Choose `kova` if you want the workflow without enforcement. Choose `kova-full` i
 ## How It Works
 
 <p align="center">
-  <img src="assets/kova-workflow.png" alt="Kova Team Loop — 6-Phase Workflow" width="100%" />
+  <img src="assets/kavex-workflow.png" alt="Kavex Team Loop — 6-Phase Workflow" width="100%" />
 </p>
 
-The Team Loop (`/kova:loop`) is **bash-orchestrated** — Claude is the worker, bash is the boss:
+The Team Loop (`/kavex:loop`) is **bash-orchestrated** — Claude is the worker, bash is the boss:
 
 ```
   ┌─────────────────────────────────────────────┐
-  │           kova-loop.sh (bash)               │
+  │           kavex-loop.sh (bash)               │
   │  Controls flow, runs verification, reviews  │
   └──────────────────┬──────────────────────────┘
                      │
@@ -165,10 +165,10 @@ The Team Loop (`/kova:loop`) is **bash-orchestrated** — Claude is the worker, 
 ### CLI (zero tokens — runs in your terminal)
 
 ```bash
-kova help          # Show all commands
-kova status        # Check hooks, stack, installed commands
-kova activate      # Turn ON hooks
-kova deactivate    # Turn OFF hooks
+kavex help          # Show all commands
+kavex status        # Check hooks, stack, installed commands
+kavex activate      # Turn ON hooks
+kavex deactivate    # Turn OFF hooks
 ```
 
 ### Slash Commands (inside Claude Code)
@@ -182,16 +182,16 @@ kova deactivate    # Turn OFF hooks
 | `/code-review` | 4 parallel reviewers + optional Codex review |
 | `/simplify` | Clean up code without changing behavior |
 | `/daily-standup` | Engineering report: shipped, blockers, priorities |
-| `/kova:loop <prd>` | Team Loop: implement each PRD item autonomously |
-| `/kova:plan` | Interactive planning with clarifying questions |
-| `/kova:init` | Scaffold a new PRD file |
+| `/kavex:loop <prd>` | Team Loop: implement each PRD item autonomously |
+| `/kavex:plan` | Interactive planning with clarifying questions |
+| `/kavex:init` | Scaffold a new PRD file |
 
 ---
 
 ## Core Features
 
 <p align="center">
-  <img src="assets/kova-safety.png" alt="Kova 7-Layer Verification Architecture" width="100%" />
+  <img src="assets/kavex-safety.png" alt="Kavex 7-Layer Verification Architecture" width="100%" />
 </p>
 
 | Feature | Description |
@@ -204,9 +204,9 @@ kova deactivate    # Turn OFF hooks
 | **Multi-Model Review** | Claude agents + optional OpenAI Codex cross-model review |
 | **Circuit Breaker** | Detects stuck loops and writes actionable failure reports |
 | **Rate Limiting** | Prevents runaway API invocations |
-| **tmux Dashboard** | Live monitoring via `kova-monitor` |
-| **Resumable Loops** | State saved in `.kova-loop/` — resume after interruption |
-| **Status Line** | Shows `[KOVA]`, `[KOVA LOOP]`, or `[kova off]` in Claude Code |
+| **tmux Dashboard** | Live monitoring via `kavex-monitor` |
+| **Resumable Loops** | State saved in `.kavex-loop/` — resume after interruption |
+| **Status Line** | Shows `[KAVEX]`, `[KAVEX LOOP]`, or `[kavex off]` in Claude Code |
 
 ### What Runs Where
 
@@ -254,7 +254,7 @@ The goal isn't to hope Claude does the right thing. It's to build a system where
 - The Team Loop runs full 7-layer verification via bash instead of relying on prompt compliance
 
 **What hooks do NOT guarantee:**
-- Hooks can be disabled by the user (`kova deactivate` or editing settings.json)
+- Hooks can be disabled by the user (`kavex deactivate` or editing settings.json)
 - The stop gate runs lint + typecheck only — build, tests, and security run in the Team Loop
 - File protection uses pattern matching, not OS-level permissions
 - Hooks require `jq` to be installed; without it, hooks **block** operations (fail-closed) for safety

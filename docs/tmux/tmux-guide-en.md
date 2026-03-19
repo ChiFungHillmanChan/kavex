@@ -1,24 +1,24 @@
-# tmux Guide for Kova
+# tmux Guide for Kavex
 
 ## What is tmux?
 
 tmux (terminal multiplexer) lets you run multiple terminal sessions inside one window. Sessions survive disconnects — close your terminal or lose SSH, and everything keeps running.
 
-## Why Kova Uses tmux
+## Why Kavex Uses tmux
 
-tmux is **optional**. It powers `kova-monitor`, a split-pane dashboard:
+tmux is **optional**. It powers `kavex-monitor`, a split-pane dashboard:
 
 ```
 ┌─────────────────────────────────┬──────────────────┐
 │                                 │                  │
-│  kova-loop running              │  Live dashboard  │
+│  kavex-loop running              │  Live dashboard  │
 │  (implement → verify →          │  (progress,      │
 │   review → commit)              │   stuck items)   │
 │                                 │                  │
 └─────────────────────────────────┴──────────────────┘
 ```
 
-Without tmux, Kova still works — just run `/kova:loop` or `bash .claude/hooks/kova-loop.sh prd.md` directly.
+Without tmux, Kavex still works — just run `/kavex:loop` or `bash .claude/hooks/kavex-loop.sh prd.md` directly.
 
 ---
 
@@ -152,36 +152,36 @@ tmux attach -t remote-work
 
 ---
 
-## Using tmux with Kova
+## Using tmux with Kavex
 
 ### Start the monitor dashboard
 
 ```bash
-kova-monitor start docs/prd.md
+kavex-monitor start docs/prd.md
 # or
-.claude/kova monitor start docs/prd.md
+.claude/kavex monitor start docs/prd.md
 ```
 
 This creates a tmux session with:
-- Left pane: `kova-loop.sh` running your PRD
+- Left pane: `kavex-loop.sh` running your PRD
 - Right pane: live progress dashboard
 
 ### Attach to a running monitor
 
 ```bash
-kova-monitor attach
+kavex-monitor attach
 ```
 
 ### Check status
 
 ```bash
-kova-monitor status
+kavex-monitor status
 ```
 
 ### Stop the monitor
 
 ```bash
-kova-monitor stop
+kavex-monitor stop
 ```
 
 ### Detach without stopping
