@@ -16,5 +16,15 @@
     "autonomous",
     "hooks",
     "enforcement"
-  ]
+  ],
+  "categories": [
+    "workflow",
+    "engineering",
+    "safety"
+  ],
+  "requirements": {
+    "jq": "required",
+    "gh": "optional",
+    "codex": "optional"
+  }
 }

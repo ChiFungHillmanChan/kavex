@@ -14,7 +14,10 @@ if ! require_jq; then
 fi
 
 INPUT=$(cat)
-TOOL_INPUT=$(echo "$INPUT" | jq -r '.tool_input.command // ""' 2>/dev/null || true)
+if ! TOOL_INPUT=$(echo "$INPUT" | jq -r '.tool_input.command // ""' 2>/dev/null); then
+  echo '{"decision":"block","reason":"KOVA: Failed to parse hook input. Blocking for safety."}'
+  exit 0
+fi
 
 # Only gate git commit commands
 case "$TOOL_INPUT" in
@@ -31,6 +34,21 @@ STATE_DIR=".kova-loop"
 if [ ! -f "$STATE_DIR/verify-output-latest.log" ]; then
   echo '{"decision":"block","reason":"KOVA GATE: Cannot commit — no verification has been run. The bash orchestrator runs verification; do not commit directly."}'
   exit 0
+fi
+
+# Freshness check: verification log must be < 10 minutes old
+_get_file_mtime() {
+  # macOS stat vs Linux stat
+  stat -f %m "$1" 2>/dev/null || stat -c %Y "$1" 2>/dev/null
+}
+VERIFY_MTIME=$(_get_file_mtime "$STATE_DIR/verify-output-latest.log")
+if [ -n "$VERIFY_MTIME" ]; then
+  NOW=$(date +%s)
+  AGE=$(( NOW - VERIFY_MTIME ))
+  if [ "$AGE" -gt 600 ]; then
+    echo '{"decision":"block","reason":"KOVA GATE: Cannot commit — verification log is stale (>10 min old). Re-run verification."}'
+    exit 0
+  fi
 fi
 
 # Check if the latest verification passed (verify-gate.sh exits 0 on pass)

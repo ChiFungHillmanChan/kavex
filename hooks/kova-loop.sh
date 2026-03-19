@@ -160,20 +160,31 @@ _maybe_escalate_to_codex() {
 # Uses mkdir (atomic on all POSIX systems) since flock is not portable to macOS.
 _acquire_loop_lock() {
   LOCK_DIR="${STATE_DIR}/.kova-loop.lock"
-  if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+  local retries=0
+  while [ "$retries" -lt 3 ]; do
+    if mkdir "$LOCK_DIR" 2>/dev/null; then
+      echo $$ > "$LOCK_DIR/pid"
+      # shellcheck disable=SC2064
+      trap "rm -rf '$LOCK_DIR'" EXIT
+      return 0
+    fi
+    # Lock exists — check if holder is alive AND is actually kova-loop
     local stale_pid=""
     [ -f "$LOCK_DIR/pid" ] && stale_pid=$(cat "$LOCK_DIR/pid" 2>/dev/null)
     if [ -n "$stale_pid" ] && kill -0 "$stale_pid" 2>/dev/null; then
-      echo "ERROR: Another Kova loop is already running in this project (PID $stale_pid)." >&2
-      exit 1
+      local holder_cmd
+      holder_cmd=$(ps -p "$stale_pid" -o args= 2>/dev/null || true)
+      if echo "$holder_cmd" | grep -q "kova-loop"; then
+        echo "ERROR: Another Kova loop is already running in this project (PID $stale_pid)." >&2
+        exit 1
+      fi
     fi
-    # Stale lock from a crashed process — reclaim it
+    # Stale lock (dead process or PID recycled to non-kova) — remove and retry
     rm -rf "$LOCK_DIR"
-    mkdir "$LOCK_DIR" 2>/dev/null || { echo "ERROR: Cannot acquire loop lock." >&2; exit 1; }
-  fi
-  echo $$ > "$LOCK_DIR/pid"
-  # shellcheck disable=SC2064
-  trap "rm -rf '$LOCK_DIR'" EXIT
+    retries=$((retries + 1))
+  done
+  echo "ERROR: Cannot acquire loop lock after 3 attempts." >&2
+  exit 1
 }
 
 main() {
